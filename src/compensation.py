@@ -9,10 +9,10 @@ from src.utils import load_config
 
 class CompensationCalculator:
     """Calculates compensation period extensions according to § 51a EEG."""
-    
+
     def __init__(self, config: Optional[Dict] = None):
         """Initialize the calculator.
-        
+
         Args:
             config: Configuration dict. If None, loads from config.yaml
         """
@@ -20,7 +20,7 @@ class CompensationCalculator:
         self.analyzer = PriceAnalyzer(config)
         self.compensation_period_years = self.config['eeg']['compensation_period_years']
         self.rule_start_date = self.config['eeg']['rule_start_date']
-    
+
     def calculate_period_extension(
         self,
         start_date: str,
@@ -28,46 +28,48 @@ class CompensationCalculator:
         installation_type: str = "general"
     ) -> Dict:
         """Calculate the extended compensation period.
-        
+
         According to § 51a EEG, the compensation period is extended by the
         amount of time lost due to negative prices.
-        
+
         For PV installations, § 51a Abs. 2 provides a special distribution mechanism
         based on monthly production patterns.
-        
+
         Args:
             start_date: Start of the 20-year compensation period (YYYY-MM-DD)
             negative_quarters: Total number of negative quarter-hours
             installation_type: "pv", "general", or "biogas"
-            
+
         Returns:
             Dict with original period, extended period, and details
         """
         start = datetime.strptime(start_date, "%Y-%m-%d")
         end_original = start + timedelta(days=self.compensation_period_years * 365)
-        
-        # Basic extension: add the lost time
-        extension_hours = negative_quarters * 0.25
-        extension_days = extension_hours / 24
-        
+
+        # Calculate extension based on actual hours
+        # Note: negative_quarters parameter now represents units (not necessarily quarters)
+        extension_days = (negative_quarters * 0.25) / 24  # Assumes units are in quarter-hours
+
         if installation_type == "pv":
             # PV-specific calculation with monthly distribution
             end_extended = self._calculate_pv_extension(start, end_original, negative_quarters)
         else:
             # Simple extension: add lost hours to the end
             end_extended = end_original + timedelta(days=extension_days)
-        
+
+        extension_hours = negative_quarters * 0.25  # For display
+
         return {
             'start_date': start_date,
             'original_end_date': end_original.strftime("%Y-%m-%d"),
             'extended_end_date': end_extended.strftime("%Y-%m-%d"),
-            'negative_quarters': negative_quarters,
+            'negative_units': negative_quarters,
             'negative_hours': extension_hours,
             'extension_days': (end_extended - end_original).days,
             'installation_type': installation_type,
             'compensation_period_years': self.compensation_period_years
         }
-    
+
     def _calculate_pv_extension(
         self,
         start_date: datetime,
@@ -75,19 +77,19 @@ class CompensationCalculator:
         negative_quarters: int
     ) -> datetime:
         """Calculate PV extension with monthly distribution.
-        
+
         According to § 51a Abs. 2 EEG, PV installations have a special mechanism
         that distributes the compensation over months after the 20-year period,
         with more compensation in months with less solar radiation.
-        
+
         This is a simplified implementation that distributes quarters across months
         with weights based on typical solar production patterns (higher in summer).
-        
+
         Args:
             start_date: Start of compensation period
             original_end: End of original 20-year period
             negative_quarters: Total negative quarters to distribute
-            
+
         Returns:
             Extended end date
         """
@@ -107,32 +109,32 @@ class CompensationCalculator:
             11: 1.5,  # November
             12: 1.5   # December
         }
-        
+
         # Distribute quarters across months starting from the end month
         quarters_per_month = defaultdict(float)
         remaining_quarters = negative_quarters
-        
+
         current_month = original_end.month
         current_year = original_end.year
-        
+
         while remaining_quarters > 0:
             # Weight determines how many quarters go to this month
             weight = month_weights[current_month]
             quarters_for_month = min(remaining_quarters, 744 * weight)  # ~744 quarters/month
-            
+
             quarters_per_month[f"{current_year}-{current_month:02d}"] += quarters_for_month
             remaining_quarters -= quarters_for_month
-            
+
             # Move to previous month
             if current_month == 1:
                 current_month = 12
                 current_year -= 1
             else:
                 current_month -= 1
-        
+
         # Calculate how many full months are needed
         months_added = len([m for m, q in quarters_per_month.items() if q > 0])
-        
+
         # Add months to original end date
         extended_end = original_end
         for i in range(months_added):
@@ -141,9 +143,9 @@ class CompensationCalculator:
                 extended_end = extended_end.replace(year=extended_end.year + 1, month=1)
             else:
                 extended_end = extended_end.replace(month=extended_end.month + 1)
-        
+
         return extended_end
-    
+
     def calculate_for_installation(
         self,
         installation_date: str,
@@ -151,12 +153,12 @@ class CompensationCalculator:
         end_date: str = None
     ) -> Dict:
         """Calculate compensation extension for a specific installation.
-        
+
         Args:
             installation_date: When the installation started operation
             start_date: Start date for analysis (defaults to installation_date)
             end_date: End date for analysis (defaults to today)
-            
+
         Returns:
             Full analysis with period extension calculation
         """
@@ -164,11 +166,12 @@ class CompensationCalculator:
             start_date = installation_date
         if end_date is None:
             end_date = datetime.now().strftime("%Y-%m-%d")
-        
-        # Get negative quarters for the relevant period
+
+        # Get negative periods for the relevant period
         negative_periods = self.analyzer.get_all_negative_periods(start_date, end_date)
-        total_negative_quarters = sum(p['duration_quarters'] for p in negative_periods)
-        
+        total_negative_units = sum(p['duration_units'] for p in negative_periods)
+        total_negative_hours = sum(p['duration_hours'] for p in negative_periods)
+
         # Calculate extension
         # For installations after Feb 25, 2025, new rules apply
         if installation_date >= self.rule_start_date:
@@ -176,13 +179,13 @@ class CompensationCalculator:
         else:
             # Older installations use different rules
             installation_type = "general"
-        
+
         extension_info = self.calculate_period_extension(
             installation_date,
-            total_negative_quarters,
+            total_negative_units,
             installation_type
         )
-        
+
         return {
             'installation_date': installation_date,
             'analysis_period': {
@@ -190,8 +193,8 @@ class CompensationCalculator:
                 'end': end_date
             },
             'negative_periods_count': len(negative_periods),
-            'total_negative_quarters': total_negative_quarters,
-            'total_negative_hours': total_negative_quarters * 0.25,
+            'total_negative_units': total_negative_units,
+            'total_negative_hours': total_negative_hours,
             'extension': extension_info
         }
 
