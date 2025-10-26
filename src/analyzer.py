@@ -40,9 +40,9 @@ class PriceAnalyzer:
 
         # Determine if data is hourly or quarter-hourly
         # Before Oct 1, 2025: 24 data points (hourly)
-        # From Oct 1, 2025 onwards: 96 data points (quarter-hourly)
+        # From Oct 1, 2025 onwards: 96 data points (quarter-hourly) (or 92/100 when there is the summer time change)
         # Check number of data points first (more reliable than date)
-        is_quarter_hourly = len(timestamps) == 96
+        is_quarter_hourly = len(timestamps) >= 90
 
         # If ambiguous, use date as fallback
         if len(timestamps) == 24 and date:
@@ -86,10 +86,17 @@ class PriceAnalyzer:
             duration_units = len(group)
             duration_hours = duration_units * resolution_hours
 
+            end_timestamp = group['timestamp'].iloc[-1]
+            if resolution_hours == 0.25:
+                minute = (end_timestamp.minute // 15) * 15 + 14
+                end_time = end_timestamp.replace(minute=minute, second=59, microsecond=0)
+            else:
+                end_time = end_timestamp.replace(minute=59, second=59, microsecond=0)
+
             negative_periods.append({
                 'start': group['timestamp'].iloc[0].isoformat(),
-                'end': group['timestamp'].iloc[-1].isoformat(),
-                'duration_units': duration_units,  # Generic units
+                'end': end_time.isoformat(),
+                'duration_units': duration_units,
                 'duration_hours': duration_hours,
                 'min_price': group['price'].min(),
                 'max_price': group['price'].max(),
