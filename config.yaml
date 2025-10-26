@@ -1,0 +1,24 @@
+api:
+  base_url: "https://api.energy-charts.info"
+  endpoint: "/price"
+  country: "DE"
+  timeout: 30
+
+cache:
+  data_dir: "data/raw"
+  processed_dir: "data/processed"
+
+output:
+  directory: "output"
+  formats:
+    - json
+    - csv
+
+dates:
+  start_date: "2025-01-01"
+  timezone: "Europe/Berlin"
+
+eeg:
+  rule_start_date: "2025-02-25"  # New rules apply from this date
+  compensation_period_years: 20
+
