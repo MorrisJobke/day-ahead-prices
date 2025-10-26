@@ -1,13 +1,11 @@
 """Data fetcher module for downloading and caching day-ahead prices."""
 import json
-import os
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import requests
-import yaml
 from dateutil.parser import parse as parse_date
 
 from src.utils import load_config, ensure_dir
@@ -48,12 +46,14 @@ class DataFetcher:
 
         for attempt in range(max_retries):
             try:
-                # Note: API returns current day prices regardless of date parameter
-                # We'll use the date from the file or current date
+                # Fetch specific day's prices from the API
+                # API accepts daily format (YYYY-MM-DD) for both start and end
                 response = requests.get(
                     self.api_url,
                     params={
-                        "country": self.config['api']['country']
+                        "bzn": "DE-LU",  # Bidding zone instead of country
+                        "start": date,    # Daily format (YYYY-MM-DD)
+                        "end": date       # Same date for single day
                     },
                     timeout=self.config['api']['timeout']
                 )
