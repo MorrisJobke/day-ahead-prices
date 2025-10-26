@@ -33,8 +33,8 @@ class PriceAnalyzer:
         if not data or 'price' not in data:
             return pd.DataFrame()
         
-        # API returns Unix timestamps (ms) and prices
-        timestamps = [datetime.fromtimestamp(ts / 1000) for ts in data.get('unix_seconds', [])]
+        # API returns Unix timestamps in seconds (not milliseconds)
+        timestamps = [datetime.fromtimestamp(ts) for ts in data.get('unix_seconds', [])]
         prices = data['price']
         
         df = pd.DataFrame({

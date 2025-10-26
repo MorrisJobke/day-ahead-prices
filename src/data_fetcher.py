@@ -43,17 +43,21 @@ class DataFetcher:
         
         # Fetch from API
         try:
+            # Note: API returns current day prices regardless of date parameter
+            # We'll use the date from the file or current date
             response = requests.get(
                 self.api_url,
                 params={
-                    "country": self.config['api']['country'],
-                    "date": date
+                    "country": self.config['api']['country']
                 },
                 timeout=self.config['api']['timeout']
             )
             response.raise_for_status()
             data = response.json()
             
+            # Add metadata about the requested date
+            data['requested_date'] = date
+
             # Cache the data
             with open(cache_file, 'w') as f:
                 json.dump(data, f, indent=2)

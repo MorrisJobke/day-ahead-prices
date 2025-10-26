@@ -195,6 +195,7 @@ result = calc.calculate_for_installation("2025-03-01")
 - **Energy-Charts API**: Day-ahead electricity prices
   - API: https://api.energy-charts.info
   - Documentation: https://api.energy-charts.info/#/
+  - **Note**: The API currently returns only current day prices, regardless of the date parameter. Historical data for specific dates may not be available through this endpoint.
 
 ## Limitations
 
