@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strompreise Day-Ahead</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+      min-height: 100vh;
+      padding-bottom: 2rem;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    header {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 0.875rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .tabs { display: flex; gap: 0.5rem; }
+    .tab-btn {
+      padding: 0.35rem 1rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab-btn.active   { background: #3b82f6; color: #fff; }
+    .tab-btn.inactive { background: #1e293b; color: #94a3b8; }
+    .tab-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Layout ─────────────────────────────────────── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.125rem 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+    }
+
+    /* ── Day header + stats ──────────────────────────── */
+    .day-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.875rem;
+      color: #0f172a;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.625rem;
+    }
+    .stat {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 0.625rem 0.75rem;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 0.2rem;
+    }
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .stat-value.red  { color: #dc2626; }
+    .stat-value.muted { color: #64748b; font-weight: 500; }
+
+    /* ── Chart ───────────────────────────────────────── */
+    .chart-wrap {
+      position: relative;
+      height: 280px;
+    }
+
+    /* ── Sunrise/sunset legend ───────────────────────── */
+    .sun-legend {
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 0.625rem;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+    .sun-legend span { display: flex; align-items: center; gap: 0.3rem; }
+    .sun-dot {
+      width: 12px; height: 2px; display: inline-block; border-radius: 1px;
+    }
+
+    /* ── Negative periods list ───────────────────────── */
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+    .period-row {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.55rem 0.75rem;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 3px solid #ef4444;
+      border-radius: 6px;
+      margin-bottom: 0.45rem;
+      flex-wrap: wrap;
+    }
+    .period-time {
+      font-weight: 700;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      color: #0f172a;
+    }
+    .period-meta {
+      font-size: 0.78rem;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .no-negative {
+      color: #16a34a;
+      font-size: 0.875rem;
+      padding: 0.25rem 0;
+    }
+
+    /* ── Footer ──────────────────────────────────────── */
+    footer {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.72rem;
+      margin-top: 0.25rem;
+    }
+
+    /* ── Error / loading ─────────────────────────────── */
+    .notice {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+    .error { color: #dc2626; }
+    code { font-family: monospace; background: #f1f5f9; padding: 0.1em 0.3em; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ Strompreise Day-Ahead</h1>
+  <div class="tabs">
+    <button id="tab-today"    class="tab-btn active"   onclick="showDay('today')">Heute</button>
+    <button id="tab-tomorrow" class="tab-btn inactive" onclick="showDay('tomorrow')">Morgen</button>
+  </div>
+</header>
+
+<main id="main">
+  <div class="card notice">Lade Preisdaten…</div>
+</main>
+<footer id="footer"></footer>
+
+<script>
+'use strict';
+
+/* ── State ────────────────────────────────────────────── */
+let appData   = null;   // parsed daily_view.json
+let activeDay = 'today';
+let chart     = null;
+
+/* ── Colour scale ─────────────────────────────────────── */
+// From PV-owner perspective: negative = red (no compensation),
+// positive shades: pale → deep blue as price rises.
+function priceColor(eur) {
+  if (eur < 0)   return '#ef4444';  // red   – negative
+  if (eur < 30)  return '#bfdbfe';  // blue-200 – low
+  if (eur < 80)  return '#60a5fa';  // blue-400 – normal
+  if (eur < 150) return '#3b82f6';  // blue-500 – high
+  return '#1d4ed8';                 // blue-700 – very high
+}
+
+/* ── Formatting helpers ───────────────────────────────── */
+function fmtEUR(v) {
+  return v.toFixed(1) + '\u00a0€/MWh';
+}
+function fmtDuration(h) {
+  const hrs  = Math.floor(h);
+  const mins = Math.round((h - hrs) * 60);
+  if (hrs === 0)  return mins + '\u00a0min';
+  if (mins === 0) return hrs + '\u00a0h';
+  return hrs + '\u00a0h\u00a0' + mins + '\u00a0min';
+}
+// Format a unix-seconds timestamp in German Berlin time (HH:MM)
+function fmtBerlinTime(unixSec) {
+  return new Date(unixSec * 1000).toLocaleTimeString('de-DE', {
+    timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit'
+  });
+}
+// Extract HH:MM from an ISO datetime string (string slice, timezone-safe
+// because the strings are already in German local time)
+function isoToHHMM(iso) {
+  return iso.substring(11, 16);
+}
+
+/* ── Sunrise/sunset helpers ───────────────────────────── */
+function getBerlinHourMin(date) {
+  const parts = new Intl.DateTimeFormat('de-DE', {
+    timeZone: 'Europe/Berlin',
+    hour: 'numeric', minute: 'numeric', hour12: false
+  }).formatToParts(date);
+  return {
+    h: parseInt(parts.find(p => p.type === 'hour').value),
+    m: parseInt(parts.find(p => p.type === 'minute').value),
+  };
+}
+function sunToBarIndex(sunDate, isQH) {
+  const { h, m } = getBerlinHourMin(sunDate);
+  return isQH ? h * 4 + Math.floor(m / 15) : h;
+}
+function sunToTimeStr(sunDate) {
+  const { h, m } = getBerlinHourMin(sunDate);
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+
+/* ── Chart.js plugin: sunrise / sunset vertical lines ─── */
+const sunPlugin = {
+  id: 'sunLines',
+  afterDatasetsDraw(chart) {
+    const sd = chart._sunData;
+    if (!sd) return;
+    const { ctx, scales: { x, y } } = chart;
+
+    function drawLine(barIdx, label, color) {
+      if (barIdx < 0 || barIdx >= chart.data.labels.length) return;
+      const xPx = x.getPixelForValue(barIdx);
+
+      // Dashed vertical line
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth   = 1.5;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(xPx, y.top);
+      ctx.lineTo(xPx, y.bottom);
+      ctx.stroke();
+      ctx.restore();
+
+      // Label inside chart area at top
+      ctx.save();
+      ctx.fillStyle  = color;
+      ctx.font       = 'bold 10px system-ui';
+      ctx.textAlign  = 'center';
+      const tw = ctx.measureText(label).width;
+      const cx = Math.min(Math.max(xPx, tw / 2 + 4), chart.width - tw / 2 - 4);
+      ctx.fillText(label, cx, y.top + 12);
+      ctx.restore();
+    }
+
+    drawLine(sd.riseIdx, '☀ ' + sd.riseStr, '#d97706');
+    drawLine(sd.setIdx,  '🌇 ' + sd.setStr,  '#b45309');
+  }
+};
+Chart.register(sunPlugin);
+
+/* ── Render ───────────────────────────────────────────── */
+function renderDay(dayData) {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  if (!dayData) {
+    main.innerHTML = `<div class="card notice error">
+      Keine Daten für diesen Tag vorhanden.<br><br>
+      Bitte <code>python3 -m src.cli update</code> ausführen und Seite neu laden.
+    </div>`;
+    return;
+  }
+
+  const isQH   = dayData.resolution === 'quarter_hourly';
+  const prices  = dayData.prices;
+  const stats   = dayData.stats;
+  const negPers = dayData.negative_periods;
+
+  /* ── 1. Day header + stats ── */
+  const dayDate = new Date(dayData.date + 'T12:00:00Z');
+  const dayName = dayDate.toLocaleDateString('de-DE', {
+    timeZone: 'Europe/Berlin',
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+
+  const hasNeg = stats.negative_hours > 0;
+
+  const statsCard = document.createElement('div');
+  statsCard.className = 'card';
+  statsCard.innerHTML = `
+    <div class="day-name">${dayName}</div>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-label">Durchschnitt</div>
+        <div class="stat-value">${fmtEUR(stats.avg_price)}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Minimum</div>
+        <div class="stat-value ${stats.min_price < 0 ? 'red' : ''}">${fmtEUR(stats.min_price)}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Maximum</div>
+        <div class="stat-value">${fmtEUR(stats.max_price)}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Negative Stunden</div>
+        <div class="stat-value ${hasNeg ? 'red' : 'muted'}">${hasNeg ? fmtDuration(stats.negative_hours) : '—'}</div>
+      </div>
+    </div>
+  `;
+  main.appendChild(statsCard);
+
+  /* ── 2. Chart ── */
+  const chartCard = document.createElement('div');
+  chartCard.className = 'card';
+
+  const labels    = prices.map(p => fmtBerlinTime(p.unix_seconds));
+  const values    = prices.map(p => p.price);
+  const colors    = values.map(priceColor);
+
+  // Sunrise / sunset for this date
+  const loc      = appData.location;
+  const sunTimes = SunCalc.getTimes(dayDate, loc.lat, loc.lng);
+  const sunData  = {
+    riseIdx: sunToBarIndex(sunTimes.sunrise, isQH),
+    riseStr: sunToTimeStr(sunTimes.sunrise),
+    setIdx:  sunToBarIndex(sunTimes.sunset,  isQH),
+    setStr:  sunToTimeStr(sunTimes.sunset),
+  };
+
+  // Tick callback: show only :00 labels (one per hour) on both resolutions
+  function tickCallback(value, index) {
+    const lbl = this.chart.data.labels[index];
+    return lbl && lbl.endsWith(':00') ? lbl : '';
+  }
+
+  const canvas = document.createElement('canvas');
+  const wrap   = document.createElement('div');
+  wrap.className = 'chart-wrap';
+  wrap.appendChild(canvas);
+
+  // Sun legend
+  const legend = document.createElement('div');
+  legend.className = 'sun-legend';
+  legend.innerHTML = `
+    <span><span class="sun-dot" style="background:#d97706"></span>Sonnenaufgang ${sunData.riseStr}</span>
+    <span><span class="sun-dot" style="background:#b45309"></span>Sonnenuntergang ${sunData.setStr}</span>
+  `;
+
+  chartCard.appendChild(wrap);
+  chartCard.appendChild(legend);
+  main.appendChild(chartCard);
+
+  if (chart) { chart.destroy(); chart = null; }
+
+  chart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderWidth: 0,
+        borderSkipped: false,
+        barPercentage: 0.95,
+        categoryPercentage: 1.0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => labels[ctx[0].dataIndex],
+            label: ctx => fmtEUR(ctx.parsed.y),
+          }
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            callback: tickCallback,
+            maxRotation: 0,
+            autoSkip: false,
+            font: { size: 10 },
+          },
+          grid: { display: false },
+        },
+        y: {
+          ticks: {
+            callback: v => v + ' €',
+            font: { size: 10 },
+          },
+          grid: {
+            color:     ctx => ctx.tick.value === 0 ? '#374151' : '#e2e8f0',
+            lineWidth: ctx => ctx.tick.value === 0 ? 2        : 1,
+          },
+        },
+      },
+    },
+  });
+
+  chart._sunData = sunData;
+
+  /* ── 3. Negative periods list ── */
+  const negCard = document.createElement('div');
+  negCard.className = 'card';
+
+  const titleSuffix = negPers.length > 0
+    ? ` (${negPers.length})`
+    : '';
+  let html = `<div class="section-title">Negative Preisperioden${titleSuffix}</div>`;
+
+  if (negPers.length === 0) {
+    html += `<div class="no-negative">✓ Keine negativen Preise an diesem Tag</div>`;
+  } else {
+    for (const p of negPers) {
+      html += `
+        <div class="period-row">
+          <span class="period-time">${isoToHHMM(p.start)} – ${isoToHHMM(p.end)}&nbsp;Uhr</span>
+          <span class="period-meta">${fmtDuration(p.duration_hours)}</span>
+          <span class="period-meta">Ø&nbsp;${fmtEUR(p.avg_price)}</span>
+          <span class="period-meta">Min&nbsp;${fmtEUR(p.min_price)}</span>
+        </div>
+      `;
+    }
+  }
+
+  negCard.innerHTML = html;
+  main.appendChild(negCard);
+}
+
+/* ── Tab switching ────────────────────────────────────── */
+function showDay(day) {
+  activeDay = day;
+  document.getElementById('tab-today').className    = 'tab-btn ' + (day === 'today'    ? 'active' : 'inactive');
+  document.getElementById('tab-tomorrow').className = 'tab-btn ' + (day === 'tomorrow' ? 'active' : 'inactive');
+  renderDay(appData[day]);
+}
+
+/* ── Bootstrap ────────────────────────────────────────── */
+async function init() {
+  try {
+    const resp = await fetch('daily_view.json');
+    if (!resp.ok) throw new Error('HTTP\u00a0' + resp.status);
+    appData = await resp.json();
+
+    // Disable "Morgen" tab if data isn't available yet
+    const tomorrowBtn = document.getElementById('tab-tomorrow');
+    if (!appData.tomorrow) {
+      tomorrowBtn.disabled = true;
+      tomorrowBtn.title    = 'Verfügbar nach 14:00 Uhr (nach Abruf mit eeg update)';
+    }
+
+    // Footer: last generated timestamp
+    const genAt = new Date(appData.generated_at);
+    document.getElementById('footer').textContent =
+      'Zuletzt aktualisiert: ' +
+      genAt.toLocaleString('de-DE', {
+        timeZone: 'Europe/Berlin',
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      }) + '\u00a0Uhr';
+
+    showDay('today');
+  } catch (e) {
+    document.getElementById('main').innerHTML = `
+      <div class="card notice error">
+        <strong>Fehler beim Laden der Daten</strong> (${e.message})<br><br>
+        Bitte zuerst <code>python3 -m src.cli update</code> ausführen,
+        dann <code>python3 -m src.cli serve</code> starten und Seite neu laden.
+      </div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>

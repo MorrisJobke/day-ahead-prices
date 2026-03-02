@@ -1,6 +1,6 @@
 """Output generator for creating static analysis files."""
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -166,6 +166,98 @@ class OutputGenerator:
 
         return str(output_file)
 
+    def generate_daily_view(self) -> Dict:
+        """Generate daily price view JSON for the web dashboard.
+
+        Returns:
+            Dict with today's and (if after 14:00) tomorrow's price data
+        """
+        today = datetime.now().strftime("%Y-%m-%d")
+        tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+
+        location = self.config.get('location', {'lat': 51.1657, 'lng': 10.4515})
+
+        def format_day_data(date: str) -> Optional[Dict]:
+            raw = self.analyzer.fetcher.load_cached_data(date)
+            if not raw:
+                return None
+
+            unix_seconds = raw.get('unix_seconds') or []
+            raw_prices = raw.get('price') or []
+            if not unix_seconds or not raw_prices:
+                return None
+
+            df = self.analyzer.parse_price_data(raw, date)
+            if df.empty:
+                return None
+
+            # Read resolution before get_negative_periods modifies the df
+            is_qh = df.attrs.get('is_quarter_hourly', True)
+            negative_periods = self.analyzer.get_negative_periods(df)
+
+            prices = [
+                {'unix_seconds': int(ts), 'price': round(float(p), 2)}
+                for ts, p in zip(unix_seconds, raw_prices)
+            ]
+
+            return {
+                'date': date,
+                'resolution': 'quarter_hourly' if is_qh else 'hourly',
+                'prices': prices,
+                'negative_periods': [
+                    {
+                        'start': p['start'],
+                        'end': p['end'],
+                        'duration_hours': round(p['duration_hours'], 2),
+                        'avg_price': round(float(p['avg_price']), 2),
+                        'min_price': round(float(p['min_price']), 2),
+                    }
+                    for p in negative_periods
+                ],
+                'stats': {
+                    'min_price': round(float(df['price'].min()), 2),
+                    'max_price': round(float(df['price'].max()), 2),
+                    'avg_price': round(float(df['price'].mean()), 2),
+                    'negative_hours': round(
+                        sum(p['duration_hours'] for p in negative_periods), 2
+                    ),
+                },
+            }
+
+        # Tomorrow's prices are published around 14:00
+        include_tomorrow = datetime.now().hour >= 14
+
+        output = {
+            'generated_at': datetime.now().isoformat(),
+            'location': location,
+            'today': format_day_data(today),
+            'tomorrow': format_day_data(tomorrow) if include_tomorrow else None,
+        }
+
+        output_file = self.output_dir / 'daily_view.json'
+        with open(output_file, 'w') as f:
+            json.dump(output, f, indent=2)
+
+        return output
+
+    def generate_web_view(self) -> Optional[str]:
+        """Copy web dashboard HTML template to output directory.
+
+        Returns:
+            Path to the generated index.html, or None if template missing
+        """
+        import shutil
+
+        template_path = Path(__file__).parent.parent / 'web' / 'index.html'
+        output_file = self.output_dir / 'index.html'
+
+        if not template_path.exists():
+            print(f"Warning: web template not found at {template_path}")
+            return None
+
+        shutil.copy2(template_path, output_file)
+        return str(output_file)
+
     def generate_all(self) -> Dict:
         """Generate all output files.
 
@@ -186,17 +278,25 @@ class OutputGenerator:
         current_year = datetime.now().year
         csv_file = self.generate_annual_csv(current_year)
 
+        print("Generating daily view for web dashboard...")
+        self.generate_daily_view()
+
+        print("Generating web dashboard...")
+        self.generate_web_view()
+
         result = {
             'generated_at': datetime.now().isoformat(),
             'files': {
                 'summary': 'summary.json',
                 'periods': 'periods.json',
                 'monthly_count': len(monthly_files),
-                'csv_files': [f'{current_year}.csv']
+                'csv_files': [f'{current_year}.csv'],
+                'daily_view': 'daily_view.json',
+                'web_dashboard': 'index.html',
             },
             'output_directory': str(self.output_dir)
         }
 
-        print(f"\n✓ Generated {len(monthly_files) + 3} files in {self.output_dir}")
+        print(f"\n✓ Generated {len(monthly_files) + 5} files in {self.output_dir}")
         return result
 

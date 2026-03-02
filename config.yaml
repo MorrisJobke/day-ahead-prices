@@ -22,3 +22,7 @@ eeg:
   rule_start_date: "2025-02-25"  # New rules apply from this date
   compensation_period_years: 20
 
+location:
+  lat: 51.1657  # Center of Germany — adjust to your actual location
+  lng: 10.4515
+

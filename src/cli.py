@@ -88,6 +88,8 @@ def generate():
     click.echo(f"  - periods.json")
     click.echo(f"  - {result['files']['monthly_count']} monthly files")
     click.echo(f"  - {len(result['files']['csv_files'])} CSV file(s)")
+    click.echo(f"  - daily_view.json (web dashboard data)")
+    click.echo(f"  - index.html (web dashboard)")
 
 
 @cli.command()
