@@ -6,7 +6,7 @@ from pathlib import Path
 
 import click
 
-from src.data_fetcher import DataFetcher
+from src.data_fetcher import DataFetcher, get_fetch_end_date
 from src.analyzer import PriceAnalyzer
 from src.output_generator import OutputGenerator
 from src.utils import load_config
@@ -30,7 +30,8 @@ def fetch(start_date, end_date):
         config = load_config()
         start_date = config['dates']['start_date']
     if not end_date:
-        end_date = datetime.now().strftime("%Y-%m-%d")
+        # Fetch tomorrow's prices if after 2 PM (when next day prices are published)
+        end_date = get_fetch_end_date().strftime("%Y-%m-%d")
 
     click.echo(f"Fetching data from {start_date} to {end_date}...")
     fetched = fetcher.fetch_date_range(start_date, end_date)
@@ -95,9 +96,9 @@ def update():
     config = load_config()
     fetcher = DataFetcher()
 
-    # Fetch latest data
+    # Fetch latest data (including tomorrow's prices if after 2 PM)
     start_date = config['dates']['start_date']
-    end_date = datetime.now().strftime("%Y-%m-%d")
+    end_date = get_fetch_end_date().strftime("%Y-%m-%d")
 
     click.echo("Updating data...")
     fetched = fetcher.fetch_date_range(start_date, end_date)

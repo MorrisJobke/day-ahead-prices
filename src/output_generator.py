@@ -58,6 +58,7 @@ class OutputGenerator:
                 'year': current_year,
                 'negative_units': year_stats.get('negative_units', 0),
                 'negative_hours': year_stats.get('negative_hours', 0),
+                'monthly_negative_hours': {month['month']: month['negative_hours'] for month in year_stats.get('monthly_breakdown', [])},
                 'months': year_stats.get('months_analyzed', 0)
             },
             'eeg_rule_info': {

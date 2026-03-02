@@ -11,6 +11,21 @@ from dateutil.parser import parse as parse_date
 from src.utils import load_config, ensure_dir
 
 
+def get_fetch_end_date() -> datetime:
+    """Get the appropriate end date for fetching prices.
+
+    If current time is after 2 PM (14:00), fetch tomorrow's prices as well,
+    since next day prices are published at 2 PM local time.
+
+    Returns:
+        datetime object representing the end date for fetching
+    """
+    now = datetime.now()
+    if now.hour >= 14:  # After 2 PM
+        return (now + timedelta(days=1)).date()
+    return now.date()
+
+
 class DataFetcher:
     """Fetches and caches day-ahead electricity prices."""
 
@@ -156,11 +171,10 @@ class DataFetcher:
 if __name__ == "__main__":
     fetcher = DataFetcher()
 
-    # Fetch initial data from config start date to today
-    end_date = datetime.now().date()
+    # Fetch initial data from config start date to today (or tomorrow if after 2 PM)
+    end_date = get_fetch_end_date()
     start_date = parse_date(fetcher.config['dates']['start_date']).date()
 
     print(f"Fetching data from {start_date} to {end_date}")
     fetched = fetcher.fetch_date_range(str(start_date), str(end_date))
     print(f"Successfully fetched {len(fetched)} days")
-
