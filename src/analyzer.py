@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
+from zoneinfo import ZoneInfo
 import pandas as pd
 
 from src.data_fetcher import DataFetcher
@@ -35,7 +36,8 @@ class PriceAnalyzer:
             return pd.DataFrame()
 
         # API returns Unix timestamps in seconds (not milliseconds)
-        timestamps = [datetime.fromtimestamp(ts) for ts in data.get('unix_seconds', [])]
+        tz_berlin = ZoneInfo('Europe/Berlin')
+        timestamps = [datetime.fromtimestamp(ts, tz=tz_berlin) for ts in data.get('unix_seconds', [])]
         prices = data['price']
 
         # Determine if data is hourly or quarter-hourly
