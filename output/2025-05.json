@@ -15,8 +15,8 @@
       "negative_percentage": 29.166666666666668,
       "periods": [
         {
-          "start": "2025-05-01T08:00:00",
-          "end": "2025-05-01T14:59:59",
+          "start": "2025-05-01T10:00:00+02:00",
+          "end": "2025-05-01T16:59:59+02:00",
           "duration_units": 7,
           "duration_hours": 7.0,
           "min_price": -129.99,
@@ -37,8 +37,8 @@
       "negative_percentage": 20.833333333333336,
       "periods": [
         {
-          "start": "2025-05-02T09:00:00",
-          "end": "2025-05-02T13:59:59",
+          "start": "2025-05-02T11:00:00+02:00",
+          "end": "2025-05-02T15:59:59+02:00",
           "duration_units": 5,
           "duration_hours": 5.0,
           "min_price": -4.0,
@@ -59,8 +59,8 @@
       "negative_percentage": 20.833333333333336,
       "periods": [
         {
-          "start": "2025-05-03T09:00:00",
-          "end": "2025-05-03T13:59:59",
+          "start": "2025-05-03T11:00:00+02:00",
+          "end": "2025-05-03T15:59:59+02:00",
           "duration_units": 5,
           "duration_hours": 5.0,
           "min_price": -3.04,
@@ -81,8 +81,8 @@
       "negative_percentage": 29.166666666666668,
       "periods": [
         {
-          "start": "2025-05-04T08:00:00",
-          "end": "2025-05-04T14:59:59",
+          "start": "2025-05-04T10:00:00+02:00",
+          "end": "2025-05-04T16:59:59+02:00",
           "duration_units": 7,
           "duration_hours": 7.0,
           "min_price": -5.01,
@@ -151,8 +151,8 @@
       "negative_percentage": 12.5,
       "periods": [
         {
-          "start": "2025-05-09T10:00:00",
-          "end": "2025-05-09T12:59:59",
+          "start": "2025-05-09T12:00:00+02:00",
+          "end": "2025-05-09T14:59:59+02:00",
           "duration_units": 3,
           "duration_hours": 3.0,
           "min_price": -0.74,
@@ -173,8 +173,8 @@
       "negative_percentage": 29.166666666666668,
       "periods": [
         {
-          "start": "2025-05-10T08:00:00",
-          "end": "2025-05-10T14:59:59",
+          "start": "2025-05-10T10:00:00+02:00",
+          "end": "2025-05-10T16:59:59+02:00",
           "duration_units": 7,
           "duration_hours": 7.0,
           "min_price": -114.53,
@@ -195,8 +195,8 @@
       "negative_percentage": 37.5,
       "periods": [
         {
-          "start": "2025-05-11T07:00:00",
-          "end": "2025-05-11T15:59:59",
+          "start": "2025-05-11T09:00:00+02:00",
+          "end": "2025-05-11T17:59:59+02:00",
           "duration_units": 9,
           "duration_hours": 9.0,
           "min_price": -250.32,
@@ -217,8 +217,8 @@
       "negative_percentage": 25.0,
       "periods": [
         {
-          "start": "2025-05-12T09:00:00",
-          "end": "2025-05-12T14:59:59",
+          "start": "2025-05-12T11:00:00+02:00",
+          "end": "2025-05-12T16:59:59+02:00",
           "duration_units": 6,
           "duration_hours": 6.0,
           "min_price": -35.0,
@@ -239,8 +239,8 @@
       "negative_percentage": 20.833333333333336,
       "periods": [
         {
-          "start": "2025-05-13T09:00:00",
-          "end": "2025-05-13T13:59:59",
+          "start": "2025-05-13T11:00:00+02:00",
+          "end": "2025-05-13T15:59:59+02:00",
           "duration_units": 5,
           "duration_hours": 5.0,
           "min_price": -16.0,
@@ -261,8 +261,8 @@
       "negative_percentage": 25.0,
       "periods": [
         {
-          "start": "2025-05-14T09:00:00",
-          "end": "2025-05-14T14:59:59",
+          "start": "2025-05-14T11:00:00+02:00",
+          "end": "2025-05-14T16:59:59+02:00",
           "duration_units": 6,
           "duration_hours": 6.0,
           "min_price": -31.82,
@@ -283,8 +283,8 @@
       "negative_percentage": 25.0,
       "periods": [
         {
-          "start": "2025-05-15T09:00:00",
-          "end": "2025-05-15T14:59:59",
+          "start": "2025-05-15T11:00:00+02:00",
+          "end": "2025-05-15T16:59:59+02:00",
           "duration_units": 6,
           "duration_hours": 6.0,
           "min_price": -14.76,
@@ -305,8 +305,8 @@
       "negative_percentage": 20.833333333333336,
       "periods": [
         {
-          "start": "2025-05-16T09:00:00",
-          "end": "2025-05-16T13:59:59",
+          "start": "2025-05-16T11:00:00+02:00",
+          "end": "2025-05-16T15:59:59+02:00",
           "duration_units": 5,
           "duration_hours": 5.0,
           "min_price": -3.15,
@@ -327,8 +327,8 @@
       "negative_percentage": 29.166666666666668,
       "periods": [
         {
-          "start": "2025-05-17T08:00:00",
-          "end": "2025-05-17T14:59:59",
+          "start": "2025-05-17T10:00:00+02:00",
+          "end": "2025-05-17T16:59:59+02:00",
           "duration_units": 7,
           "duration_hours": 7.0,
           "min_price": -11.27,
@@ -349,8 +349,8 @@
       "negative_percentage": 25.0,
       "periods": [
         {
-          "start": "2025-05-18T09:00:00",
-          "end": "2025-05-18T14:59:59",
+          "start": "2025-05-18T11:00:00+02:00",
+          "end": "2025-05-18T16:59:59+02:00",
           "duration_units": 6,
           "duration_hours": 6.0,
           "min_price": -15.0,
@@ -395,8 +395,8 @@
       "negative_percentage": 16.666666666666664,
       "periods": [
         {
-          "start": "2025-05-21T10:00:00",
-          "end": "2025-05-21T13:59:59",
+          "start": "2025-05-21T12:00:00+02:00",
+          "end": "2025-05-21T15:59:59+02:00",
           "duration_units": 4,
           "duration_hours": 4.0,
           "min_price": -2.2,
@@ -417,8 +417,8 @@
       "negative_percentage": 25.0,
       "periods": [
         {
-          "start": "2025-05-22T10:00:00",
-          "end": "2025-05-22T15:59:59",
+          "start": "2025-05-22T12:00:00+02:00",
+          "end": "2025-05-22T17:59:59+02:00",
           "duration_units": 6,
           "duration_hours": 6.0,
           "min_price": -15.4,
@@ -451,8 +451,8 @@
       "negative_percentage": 29.166666666666668,
       "periods": [
         {
-          "start": "2025-05-24T08:00:00",
-          "end": "2025-05-24T14:59:59",
+          "start": "2025-05-24T10:00:00+02:00",
+          "end": "2025-05-24T16:59:59+02:00",
           "duration_units": 7,
           "duration_hours": 7.0,
           "min_price": -1.77,
@@ -473,8 +473,8 @@
       "negative_percentage": 29.166666666666668,
       "periods": [
         {
-          "start": "2025-05-25T08:00:00",
-          "end": "2025-05-25T14:59:59",
+          "start": "2025-05-25T10:00:00+02:00",
+          "end": "2025-05-25T16:59:59+02:00",
           "duration_units": 7,
           "duration_hours": 7.0,
           "min_price": -5.05,
@@ -495,8 +495,8 @@
       "negative_percentage": 16.666666666666664,
       "periods": [
         {
-          "start": "2025-05-26T10:00:00",
-          "end": "2025-05-26T13:59:59",
+          "start": "2025-05-26T12:00:00+02:00",
+          "end": "2025-05-26T15:59:59+02:00",
           "duration_units": 4,
           "duration_hours": 4.0,
           "min_price": -1.45,
@@ -541,8 +541,8 @@
       "negative_percentage": 16.666666666666664,
       "periods": [
         {
-          "start": "2025-05-29T11:00:00",
-          "end": "2025-05-29T14:59:59",
+          "start": "2025-05-29T13:00:00+02:00",
+          "end": "2025-05-29T16:59:59+02:00",
           "duration_units": 4,
           "duration_hours": 4.0,
           "min_price": -1.99,
@@ -563,8 +563,8 @@
       "negative_percentage": 25.0,
       "periods": [
         {
-          "start": "2025-05-30T09:00:00",
-          "end": "2025-05-30T14:59:59",
+          "start": "2025-05-30T11:00:00+02:00",
+          "end": "2025-05-30T16:59:59+02:00",
           "duration_units": 6,
           "duration_hours": 6.0,
           "min_price": -3.1,
@@ -585,8 +585,8 @@
       "negative_percentage": 29.166666666666668,
       "periods": [
         {
-          "start": "2025-05-31T08:00:00",
-          "end": "2025-05-31T14:59:59",
+          "start": "2025-05-31T10:00:00+02:00",
+          "end": "2025-05-31T16:59:59+02:00",
           "duration_units": 7,
           "duration_hours": 7.0,
           "min_price": -13.17,
