@@ -253,7 +253,7 @@ function sunToTimeStr(sunDate) {
 const sunPlugin = {
   id: 'sunLines',
   afterDatasetsDraw(chart) {
-    const sd = chart._sunData;
+    const sd = chart.options?.plugins?.sunLines;
     if (!sd) return;
     const { ctx, scales: { x, y } } = chart;
 
@@ -402,6 +402,7 @@ function renderDay(dayData) {
       maintainAspectRatio: false,
       animation: false,
       plugins: {
+        sunLines: sunData,
         legend: { display: false },
         tooltip: {
           callbacks: {
@@ -433,8 +434,6 @@ function renderDay(dayData) {
       },
     },
   });
-
-  chart._sunData = sunData;
 
   /* ── 3. Negative periods list ── */
   const negCard = document.createElement('div');
