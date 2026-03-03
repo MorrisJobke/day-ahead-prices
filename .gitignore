@@ -31,12 +31,13 @@ wheels/
 *~
 
 # Project specific
-data/raw/*
-!data/raw/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
-output/*
-!output/.gitkeep
+
+output/daily_view.json
+output/index.html
+output/*.csv
+output/summary.json
 
 # OS
 .DS_Store
