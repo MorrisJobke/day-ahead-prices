@@ -45,7 +45,6 @@ class OutputGenerator:
         year_stats = self.analyzer.analyze_year(current_year)
 
         summary = {
-            'generated_at': datetime.now().isoformat(),
             'data_period': {
                 'start': dates[0] if dates else None,
                 'end': dates[-1] if dates else None,
@@ -111,7 +110,6 @@ class OutputGenerator:
         all_periods = self.analyzer.get_all_negative_periods()
 
         output = {
-            'generated_at': datetime.now().isoformat(),
             'total_periods': len(all_periods),
             'periods': all_periods
         }
@@ -229,7 +227,6 @@ class OutputGenerator:
         include_tomorrow = datetime.now().hour >= 14
 
         output = {
-            'generated_at': datetime.now().isoformat(),
             'location': location,
             'yesterday': format_day_data(yesterday),
             'today': format_day_data(today),
@@ -287,7 +284,6 @@ class OutputGenerator:
         self.generate_web_view()
 
         result = {
-            'generated_at': datetime.now().isoformat(),
             'files': {
                 'summary': 'summary.json',
                 'periods': 'periods.json',
