@@ -172,6 +172,7 @@ class OutputGenerator:
         Returns:
             Dict with today's and (if after 14:00) tomorrow's price data
         """
+        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         today = datetime.now().strftime("%Y-%m-%d")
         tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
 
@@ -230,6 +231,7 @@ class OutputGenerator:
         output = {
             'generated_at': datetime.now().isoformat(),
             'location': location,
+            'yesterday': format_day_data(yesterday),
             'today': format_day_data(today),
             'tomorrow': format_day_data(tomorrow) if include_tomorrow else None,
         }

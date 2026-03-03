@@ -176,8 +176,9 @@
 <header>
   <h1>⚡ Strompreise Day-Ahead</h1>
   <div class="tabs">
-    <button id="tab-today"    class="tab-btn active"   onclick="showDay('today')">Heute</button>
-    <button id="tab-tomorrow" class="tab-btn inactive" onclick="showDay('tomorrow')">Morgen</button>
+    <button id="tab-yesterday" class="tab-btn inactive" onclick="showDay('yesterday')">Gestern</button>
+    <button id="tab-today"     class="tab-btn active"   onclick="showDay('today')">Heute</button>
+    <button id="tab-tomorrow"  class="tab-btn inactive" onclick="showDay('tomorrow')">Morgen</button>
   </div>
 </header>
 
@@ -466,8 +467,9 @@ function renderDay(dayData) {
 /* ── Tab switching ────────────────────────────────────── */
 function showDay(day) {
   activeDay = day;
-  document.getElementById('tab-today').className    = 'tab-btn ' + (day === 'today'    ? 'active' : 'inactive');
-  document.getElementById('tab-tomorrow').className = 'tab-btn ' + (day === 'tomorrow' ? 'active' : 'inactive');
+  document.getElementById('tab-yesterday').className = 'tab-btn ' + (day === 'yesterday' ? 'active' : 'inactive');
+  document.getElementById('tab-today').className     = 'tab-btn ' + (day === 'today'     ? 'active' : 'inactive');
+  document.getElementById('tab-tomorrow').className  = 'tab-btn ' + (day === 'tomorrow'  ? 'active' : 'inactive');
   renderDay(appData[day]);
 }
 
@@ -477,6 +479,13 @@ async function init() {
     const resp = await fetch('daily_view.json');
     if (!resp.ok) throw new Error('HTTP\u00a0' + resp.status);
     appData = await resp.json();
+
+    // Disable "Gestern" tab if data isn't in cache
+    const yesterdayBtn = document.getElementById('tab-yesterday');
+    if (!appData.yesterday) {
+      yesterdayBtn.disabled = true;
+      yesterdayBtn.title    = 'Keine Daten für gestern im Cache';
+    }
 
     // Disable "Morgen" tab if data isn't available yet
     const tomorrowBtn = document.getElementById('tab-tomorrow');
