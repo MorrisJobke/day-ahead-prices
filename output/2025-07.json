@@ -51,8 +51,8 @@
       "negative_percentage": 16.666666666666664,
       "periods": [
         {
-          "start": "2025-07-04T12:00:00",
-          "end": "2025-07-04T15:59:59",
+          "start": "2025-07-04T10:00:00",
+          "end": "2025-07-04T13:59:59",
           "duration_units": 4,
           "duration_hours": 4.0,
           "min_price": -1.56,
@@ -73,8 +73,8 @@
       "negative_percentage": 25.0,
       "periods": [
         {
-          "start": "2025-07-05T11:00:00",
-          "end": "2025-07-05T16:59:59",
+          "start": "2025-07-05T09:00:00",
+          "end": "2025-07-05T14:59:59",
           "duration_units": 6,
           "duration_hours": 6.0,
           "min_price": -2.26,
@@ -251,8 +251,8 @@
       "negative_percentage": 4.166666666666666,
       "periods": [
         {
-          "start": "2025-07-19T13:00:00",
-          "end": "2025-07-19T13:59:59",
+          "start": "2025-07-19T11:00:00",
+          "end": "2025-07-19T11:59:59",
           "duration_units": 1,
           "duration_hours": 1.0,
           "min_price": -0.01,
@@ -273,8 +273,8 @@
       "negative_percentage": 4.166666666666666,
       "periods": [
         {
-          "start": "2025-07-20T13:00:00",
-          "end": "2025-07-20T13:59:59",
+          "start": "2025-07-20T11:00:00",
+          "end": "2025-07-20T11:59:59",
           "duration_units": 1,
           "duration_hours": 1.0,
           "min_price": -0.01,

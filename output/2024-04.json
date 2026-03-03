@@ -15,8 +15,8 @@
       "negative_percentage": 12.5,
       "periods": [
         {
-          "start": "2024-04-01T14:00:00",
-          "end": "2024-04-01T16:59:59",
+          "start": "2024-04-01T12:00:00",
+          "end": "2024-04-01T14:59:59",
           "duration_units": 3,
           "duration_hours": 3.0,
           "min_price": -0.01,
@@ -37,8 +37,8 @@
       "negative_percentage": 16.666666666666664,
       "periods": [
         {
-          "start": "2024-04-02T11:00:00",
-          "end": "2024-04-02T14:59:59",
+          "start": "2024-04-02T09:00:00",
+          "end": "2024-04-02T12:59:59",
           "duration_units": 4,
           "duration_hours": 4.0,
           "min_price": -1.09,
@@ -83,8 +83,8 @@
       "negative_percentage": 4.166666666666666,
       "periods": [
         {
-          "start": "2024-04-05T14:00:00",
-          "end": "2024-04-05T14:59:59",
+          "start": "2024-04-05T12:00:00",
+          "end": "2024-04-05T12:59:59",
           "duration_units": 1,
           "duration_hours": 1.0,
           "min_price": -0.1,
@@ -105,8 +105,8 @@
       "negative_percentage": 25.0,
       "periods": [
         {
-          "start": "2024-04-06T11:00:00",
-          "end": "2024-04-06T16:59:59",
+          "start": "2024-04-06T09:00:00",
+          "end": "2024-04-06T14:59:59",
           "duration_units": 6,
           "duration_hours": 6.0,
           "min_price": -59.92,
@@ -127,8 +127,8 @@
       "negative_percentage": 33.33333333333333,
       "periods": [
         {
-          "start": "2024-04-07T09:00:00",
-          "end": "2024-04-07T16:59:59",
+          "start": "2024-04-07T07:00:00",
+          "end": "2024-04-07T14:59:59",
           "duration_units": 8,
           "duration_hours": 8.0,
           "min_price": -26.79,
@@ -197,8 +197,8 @@
       "negative_percentage": 4.166666666666666,
       "periods": [
         {
-          "start": "2024-04-12T13:00:00",
-          "end": "2024-04-12T13:59:59",
+          "start": "2024-04-12T11:00:00",
+          "end": "2024-04-12T11:59:59",
           "duration_units": 1,
           "duration_hours": 1.0,
           "min_price": -0.07,
@@ -219,8 +219,8 @@
       "negative_percentage": 33.33333333333333,
       "periods": [
         {
-          "start": "2024-04-13T10:00:00",
-          "end": "2024-04-13T17:59:59",
+          "start": "2024-04-13T08:00:00",
+          "end": "2024-04-13T15:59:59",
           "duration_units": 8,
           "duration_hours": 8.0,
           "min_price": -55.01,
@@ -241,8 +241,8 @@
       "negative_percentage": 29.166666666666668,
       "periods": [
         {
-          "start": "2024-04-14T10:00:00",
-          "end": "2024-04-14T16:59:59",
+          "start": "2024-04-14T08:00:00",
+          "end": "2024-04-14T14:59:59",
           "duration_units": 7,
           "duration_hours": 7.0,
           "min_price": -60.07,
@@ -335,8 +335,8 @@
       "negative_percentage": 4.166666666666666,
       "periods": [
         {
-          "start": "2024-04-21T14:00:00",
-          "end": "2024-04-21T14:59:59",
+          "start": "2024-04-21T12:00:00",
+          "end": "2024-04-21T12:59:59",
           "duration_units": 1,
           "duration_hours": 1.0,
           "min_price": -0.9,
@@ -417,8 +417,8 @@
       "negative_percentage": 4.166666666666666,
       "periods": [
         {
-          "start": "2024-04-27T13:00:00",
-          "end": "2024-04-27T13:59:59",
+          "start": "2024-04-27T11:00:00",
+          "end": "2024-04-27T11:59:59",
           "duration_units": 1,
           "duration_hours": 1.0,
           "min_price": -0.06,
@@ -439,8 +439,8 @@
       "negative_percentage": 41.66666666666667,
       "periods": [
         {
-          "start": "2024-04-28T08:00:00",
-          "end": "2024-04-28T17:59:59",
+          "start": "2024-04-28T06:00:00",
+          "end": "2024-04-28T15:59:59",
           "duration_units": 10,
           "duration_hours": 10.0,
           "min_price": -65.06,
