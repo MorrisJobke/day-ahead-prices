@@ -249,6 +249,28 @@ function sunToTimeStr(sunDate) {
   return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
 }
 
+/* ── Chart.js plugin: negative/zero column backgrounds ── */
+const columnHighlightPlugin = {
+  id: 'columnHighlight',
+  beforeDatasetsDraw(chart) {
+    const { ctx, data, scales: { x, y } } = chart;
+    const values = data.datasets[0]?.data;
+    if (!values?.length) return;
+
+    const colWidth = x.getPixelForValue(1) - x.getPixelForValue(0);
+
+    ctx.save();
+    values.forEach((v, i) => {
+      if (v > 0) return;
+      ctx.fillStyle = v < 0 ? 'rgba(239,68,68,0.12)' : 'rgba(234,179,8,0.18)';
+      const xPx = x.getPixelForValue(i);
+      ctx.fillRect(xPx - colWidth / 2, y.top, colWidth, y.bottom - y.top);
+    });
+    ctx.restore();
+  }
+};
+Chart.register(columnHighlightPlugin);
+
 /* ── Chart.js plugin: sunrise / sunset vertical lines ─── */
 const sunPlugin = {
   id: 'sunLines',
@@ -379,6 +401,8 @@ function renderDay(dayData) {
   legend.innerHTML = `
     <span><span class="sun-dot" style="background:#d97706"></span>Sonnenaufgang ${sunData.riseStr}</span>
     <span><span class="sun-dot" style="background:#b45309"></span>Sonnenuntergang ${sunData.setStr}</span>
+    <span><span class="sun-dot" style="background:rgba(239,68,68,0.4);height:10px;border-radius:2px"></span>Negativpreis</span>
+    <span><span class="sun-dot" style="background:rgba(234,179,8,0.5);height:10px;border-radius:2px"></span>Nullpreis</span>
   `;
 
   chartCard.appendChild(wrap);
