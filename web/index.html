@@ -301,7 +301,7 @@ const sunPlugin = {
       ctx.textAlign  = 'center';
       const tw = ctx.measureText(label).width;
       const cx = Math.min(Math.max(xPx, tw / 2 + 4), chart.width - tw / 2 - 4);
-      ctx.fillText(label, cx, y.top + 12);
+      ctx.fillText(label, cx, y.top - 5);
       ctx.restore();
     }
 
@@ -428,6 +428,7 @@ function renderDay(dayData) {
       responsive: true,
       maintainAspectRatio: false,
       animation: false,
+      layout: { padding: { top: 20 } },
       interaction: {
         mode: 'index',
         intersect: false,
