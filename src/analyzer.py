@@ -228,7 +228,7 @@ class PriceAnalyzer:
         if start_date is None:
             start_date = self.config['dates']['start_date']
         if end_date is None:
-            end_date = datetime.now().strftime("%Y-%m-%d")
+            end_date = datetime.now(ZoneInfo('Europe/Berlin')).strftime("%Y-%m-%d")
 
         all_periods = []
         dates = self.fetcher.get_cached_dates()

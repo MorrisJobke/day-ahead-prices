@@ -4,6 +4,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
+from zoneinfo import ZoneInfo
 
 import requests
 from dateutil.parser import parse as parse_date
@@ -20,8 +21,8 @@ def get_fetch_end_date() -> datetime:
     Returns:
         datetime object representing the end date for fetching
     """
-    now = datetime.now()
-    if now.hour >= 14:  # After 2 PM
+    now = datetime.now(ZoneInfo('Europe/Berlin'))
+    if now.hour >= 14:  # After 2 PM CET/CEST
         return (now + timedelta(days=1)).date()
     return now.date()
 

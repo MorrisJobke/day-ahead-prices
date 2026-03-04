@@ -3,6 +3,7 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
+from zoneinfo import ZoneInfo
 
 from src.analyzer import PriceAnalyzer
 from src.compensation import CompensationCalculator
@@ -170,9 +171,10 @@ class OutputGenerator:
         Returns:
             Dict with today's and (if after 14:00) tomorrow's price data
         """
-        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-        today = datetime.now().strftime("%Y-%m-%d")
-        tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+        now = datetime.now(ZoneInfo('Europe/Berlin'))
+        yesterday = (now - timedelta(days=1)).strftime("%Y-%m-%d")
+        today = now.strftime("%Y-%m-%d")
+        tomorrow = (now + timedelta(days=1)).strftime("%Y-%m-%d")
 
         location = self.config.get('location', {'lat': 51.1657, 'lng': 10.4515})
 
@@ -224,7 +226,7 @@ class OutputGenerator:
             }
 
         # Tomorrow's prices are published around 14:00
-        include_tomorrow = datetime.now().hour >= 14
+        include_tomorrow = now.hour >= 14
 
         output = {
             'location': location,
