@@ -359,10 +359,13 @@ function renderDay(dayData) {
     setStr:  sunToTimeStr(sunTimes.sunset),
   };
 
-  // Tick callback: show only :00 labels (one per hour) on both resolutions
+  // Tick callback: show :00 labels, thinned out on narrow screens
   function tickCallback(value, index) {
     const lbl = this.chart.data.labels[index];
-    return lbl && lbl.endsWith(':00') ? lbl : '';
+    if (!lbl || !lbl.endsWith(':00')) return '';
+    const hour = parseInt(lbl);
+    const step = this.chart.width < 400 ? 6 : this.chart.width < 600 ? 3 : 1;
+    return hour % step === 0 ? lbl : '';
   }
 
   const canvas = document.createElement('canvas');
