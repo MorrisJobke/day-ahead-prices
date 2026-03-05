@@ -6,6 +6,7 @@ on:
   schedule:
     - cron: '30 13 * * *'  # 12:30 UTC = after EPEX publishes tomorrow's prices (14:30 CET)
     - cron: '30 12 * * *'  # 12:30 UTC = after EPEX publishes tomorrow's prices (14:30 CEST)
+    - cron: '0 5 * * *'    # 05:00 UTC = morning catch-up run
   workflow_dispatch:
 
 permissions:
