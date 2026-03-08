@@ -1,0 +1,25 @@
+{
+  "data_period": {
+    "start": "2024-01-01",
+    "end": "2026-03-08",
+    "total_days": 798
+  },
+  "total_negative_units": 773,
+  "total_negative_hours": 587.0,
+  "total_periods": 126,
+  "current_year": {
+    "year": 2026,
+    "negative_units": 49,
+    "negative_hours": 12.25,
+    "monthly_negative_hours": {
+      "1": 2.5,
+      "2": 5.75,
+      "3": 4.0
+    },
+    "months": 3
+  },
+  "eeg_rule_info": {
+    "rule_start_date": "2025-02-25",
+    "compensation_period_years": 20
+  }
+}
