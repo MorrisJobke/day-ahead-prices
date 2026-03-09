@@ -206,13 +206,19 @@ let chart     = null;
 
 /* ── Colour scale ─────────────────────────────────────── */
 // From PV-owner perspective: negative = red (no compensation),
-// positive shades: pale → deep blue as price rises.
+// below EEG threshold = green (cheap / favourable),
+// above threshold: pale → deep blue as price rises.
+const EEG_PRICE_THRESHOLD = 77.80;  // EUR/MWh
+
 function priceColor(eur) {
-  if (eur < 0)   return '#ef4444';  // red   – negative
-  if (eur < 30)  return '#bfdbfe';  // blue-200 – low
-  if (eur < 80)  return '#60a5fa';  // blue-400 – normal
-  if (eur < 150) return '#3b82f6';  // blue-500 – high
-  return '#1d4ed8';                 // blue-700 – very high
+  if (eur < 0)                    return '#ef4444';  // red      – negative
+  if (eur < EEG_PRICE_THRESHOLD)  return '#4ade80';  // green    – below threshold
+  if (eur < 100)                  return '#bfdbfe';  // blue-200 – just above threshold
+  if (eur < 125)                  return '#93c5fd';  // blue-300
+  if (eur < 150)                  return '#60a5fa';  // blue-400
+  if (eur < 180)                  return '#3b82f6';  // blue-500
+  if (eur < 220)                  return '#2563eb';  // blue-600
+  return '#1d4ed8';                                  // blue-700 – very high
 }
 
 /* ── Formatting helpers ───────────────────────────────── */
@@ -516,7 +522,7 @@ function showDay(day) {
 /* ── Bootstrap ────────────────────────────────────────── */
 async function init() {
   try {
-    const resp = await fetch('daily_view.json');
+    const resp = await fetch('daily_view.json?_=' + Date.now());
     if (!resp.ok) throw new Error('HTTP\u00a0' + resp.status);
     const lastModified = resp.headers.get('Last-Modified');
     appData = await resp.json();
