@@ -259,6 +259,162 @@ class OutputGenerator:
         shutil.copy2(template_path, output_file)
         return str(output_file)
 
+    def generate_history_view(self) -> Optional[str]:
+        """Generate historical price distribution statistics for the web dashboard.
+
+        Returns:
+            Path to the generated history_view.json, or None on error
+        """
+        import shutil
+
+        dates = sorted(self.analyzer.fetcher.get_cached_dates())
+        if not dates:
+            return None
+
+        # month_data: {(year, month): {...accumulators...}}
+        month_data: Dict = {}
+
+        for date_str in dates:
+            raw = self.analyzer.fetcher.load_cached_data(date_str)
+            if not raw:
+                continue
+            prices = raw.get('price') or []
+            if not prices:
+                continue
+
+            is_qh = len(prices) >= 90
+            slot_hours = 0.25 if is_qh else 1.0
+
+            year, month, _ = (int(x) for x in date_str.split('-'))
+            key = (year, month)
+            if key not in month_data:
+                month_data[key] = {
+                    'days': 0,
+                    'total_hours': 0.0,
+                    'price_sum': 0.0,
+                    'price_count': 0,
+                    'daily_spreads': [],
+                    'buckets': {
+                        'deeply_negative': 0.0,
+                        'negative': 0.0,
+                        'near_zero_neg': 0.0,
+                        'near_zero_pos': 0.0,
+                        'normal': 0.0,
+                    }
+                }
+
+            md = month_data[key]
+            md['days'] += 1
+            day_min = min(prices)
+            day_max = max(prices)
+            md['daily_spreads'].append(day_max - day_min)
+
+            for p in prices:
+                md['total_hours'] += slot_hours
+                md['price_sum'] += p * slot_hours
+                md['price_count'] += 1
+                if p < -50:
+                    md['buckets']['deeply_negative'] += slot_hours
+                elif p < -10:
+                    md['buckets']['negative'] += slot_hours
+                elif p < 0:
+                    md['buckets']['near_zero_neg'] += slot_hours
+                elif p <= 10:
+                    md['buckets']['near_zero_pos'] += slot_hours
+                else:
+                    md['buckets']['normal'] += slot_hours
+
+        # Build monthly_stats list
+        month_labels = {
+            1: 'Jan', 2: 'Feb', 3: 'Mär', 4: 'Apr', 5: 'Mai', 6: 'Jun',
+            7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Okt', 11: 'Nov', 12: 'Dez'
+        }
+        monthly_stats = []
+        for (year, month), md in sorted(month_data.items()):
+            total_hours = md['total_hours']
+            neg_hours = (
+                md['buckets']['deeply_negative'] +
+                md['buckets']['negative'] +
+                md['buckets']['near_zero_neg']
+            )
+            spreads = md['daily_spreads']
+            avg_price = md['price_sum'] / total_hours if total_hours > 0 else 0.0
+            monthly_stats.append({
+                'year': year,
+                'month': month,
+                'label': f"{month_labels[month]} {year}",
+                'days_analyzed': md['days'],
+                'total_hours': round(total_hours, 2),
+                'avg_price': round(avg_price, 2),
+                'avg_daily_spread': round(sum(spreads) / len(spreads), 2) if spreads else 0.0,
+                'max_daily_spread': round(max(spreads), 2) if spreads else 0.0,
+                'buckets': {k: round(v, 2) for k, v in md['buckets'].items()},
+                'negative_hours': round(neg_hours, 2),
+                'negative_pct': round(neg_hours / total_hours * 100, 2) if total_hours > 0 else 0.0,
+            })
+
+        # Build yearly_stats list
+        year_data: Dict = {}
+        for ms in monthly_stats:
+            y = ms['year']
+            if y not in year_data:
+                year_data[y] = {
+                    'months': 0,
+                    'total_hours': 0.0,
+                    'price_sum': 0.0,
+                    'spread_sum': 0.0,
+                    'buckets': {
+                        'deeply_negative': 0.0,
+                        'negative': 0.0,
+                        'near_zero_neg': 0.0,
+                        'near_zero_pos': 0.0,
+                        'normal': 0.0,
+                    }
+                }
+            yd = year_data[y]
+            yd['months'] += 1
+            yd['total_hours'] += ms['total_hours']
+            yd['price_sum'] += ms['avg_price'] * ms['total_hours']
+            yd['spread_sum'] += ms['avg_daily_spread']
+            for bk, bv in ms['buckets'].items():
+                yd['buckets'][bk] += bv
+
+        yearly_stats = []
+        for year, yd in sorted(year_data.items()):
+            th = yd['total_hours']
+            neg_hours = (
+                yd['buckets']['deeply_negative'] +
+                yd['buckets']['negative'] +
+                yd['buckets']['near_zero_neg']
+            )
+            yearly_stats.append({
+                'year': year,
+                'months_analyzed': yd['months'],
+                'total_hours': round(th, 2),
+                'avg_price': round(yd['price_sum'] / th, 2) if th > 0 else 0.0,
+                'avg_daily_spread': round(yd['spread_sum'] / yd['months'], 2) if yd['months'] > 0 else 0.0,
+                'buckets': {k: round(v, 2) for k, v in yd['buckets'].items()},
+                'negative_hours': round(neg_hours, 2),
+                'negative_pct': round(neg_hours / th * 100, 2) if th > 0 else 0.0,
+            })
+
+        output = {
+            'generated_at': datetime.now(ZoneInfo('Europe/Berlin')).isoformat(),
+            'monthly_stats': monthly_stats,
+            'yearly_stats': yearly_stats,
+        }
+
+        output_file = self.output_dir / 'history_view.json'
+        with open(output_file, 'w') as f:
+            json.dump(output, f, indent=2)
+
+        # Copy HTML template
+        template_path = Path(__file__).parent.parent / 'web' / 'history.html'
+        if template_path.exists():
+            shutil.copy2(template_path, self.output_dir / 'history.html')
+
+        return str(output_file)
+
     def generate_all(self) -> Dict:
         """Generate all output files.
 
@@ -285,6 +441,9 @@ class OutputGenerator:
         print("Generating web dashboard...")
         self.generate_web_view()
 
+        print("Generating history view...")
+        self.generate_history_view()
+
         result = {
             'files': {
                 'summary': 'summary.json',
@@ -293,10 +452,12 @@ class OutputGenerator:
                 'csv_files': [f'{current_year}.csv'],
                 'daily_view': 'daily_view.json',
                 'web_dashboard': 'index.html',
+                'history_view': 'history_view.json',
+                'history_html': 'history.html',
             },
             'output_directory': str(self.output_dir)
         }
 
-        print(f"\n✓ Generated {len(monthly_files) + 5} files in {self.output_dir}")
+        print(f"\n✓ Generated {len(monthly_files) + 7} files in {self.output_dir}")
         return result
 

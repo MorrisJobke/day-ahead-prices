@@ -184,10 +184,13 @@
 
 <header>
   <h1>⚡ Strompreise Day-Ahead</h1>
-  <div class="tabs">
-    <button id="tab-yesterday" class="tab-btn inactive" onclick="showDay('yesterday')">Gestern</button>
-    <button id="tab-today"     class="tab-btn active"   onclick="showDay('today')">Heute</button>
-    <button id="tab-tomorrow"  class="tab-btn inactive" onclick="showDay('tomorrow')">Morgen</button>
+  <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+    <div class="tabs">
+      <button id="tab-yesterday" class="tab-btn inactive" onclick="showDay('yesterday')">Gestern</button>
+      <button id="tab-today"     class="tab-btn active"   onclick="showDay('today')">Heute</button>
+      <button id="tab-tomorrow"  class="tab-btn inactive" onclick="showDay('tomorrow')">Morgen</button>
+    </div>
+    <a href="history.html" style="color:#94a3b8;text-decoration:none;font-size:0.8rem;font-weight:600;white-space:nowrap;">📊 Verlauf →</a>
   </div>
 </header>
 
