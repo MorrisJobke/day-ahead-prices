@@ -15,7 +15,7 @@ output:
     - csv
 
 dates:
-  start_date: "2025-01-01"
+  start_date: "2020-01-01"
   timezone: "Europe/Berlin"
 
 eeg:
