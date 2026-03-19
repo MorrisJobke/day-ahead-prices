@@ -10,6 +10,8 @@ from src.data_fetcher import DataFetcher, get_fetch_end_date
 from src.analyzer import PriceAnalyzer
 from src.output_generator import OutputGenerator
 from src.utils import load_config
+from src.pv_fetcher import PVFetcher
+from src.pv_analyzer import PVAnalyzer
 
 
 @click.group()
@@ -167,6 +169,73 @@ def calculate(installation_date, start_date, end_date):
     click.echo(f"  Original end date: {ext['original_end_date']}")
     click.echo(f"  Extended end date: {ext['extended_end_date']}")
     click.echo(f"  Extension: {ext['extension_days']} days")
+
+
+@cli.group()
+def pv():
+    """PV generation vs. negative-price analysis."""
+    pass
+
+
+@pv.command('fetch')
+@click.option('--start-date', default=None, help='Start date (YYYY-MM-DD), default: pv_start_date from config')
+@click.option('--end-date', default=None, help='End date (YYYY-MM-DD), default: yesterday')
+@click.option('--force', is_flag=True, help='Re-fetch even if already cached')
+def pv_fetch(start_date, end_date, force):
+    """Fetch PV generation data from HomeAssistant."""
+    config = load_config()
+    fetcher = PVFetcher(config)
+
+    if not config.get('homeassistant', {}).get('token'):
+        click.echo("Error: homeassistant.token is empty in config.yaml")
+        click.echo("Create a Long-Lived Access Token in HA → Profile → Security.")
+        sys.exit(1)
+
+    if not start_date:
+        start_date = config['homeassistant'].get('pv_start_date', '2025-09-09')
+    if not end_date:
+        from zoneinfo import ZoneInfo
+        yesterday = (datetime.now(ZoneInfo('Europe/Berlin')).date())
+        end_date = yesterday.strftime('%Y-%m-%d')
+
+    click.echo(f"Fetching PV data from {start_date} to {end_date}...")
+    try:
+        fetched = fetcher.fetch_date_range(start_date, end_date, force=force)
+        click.echo(f"✓ Fetched {len(fetched)} days")
+    except RuntimeError as e:
+        click.echo(f"Error: {e}")
+        sys.exit(1)
+
+
+@pv.command('generate')
+def pv_generate():
+    """Generate pv_analysis.json and copy pv_history.html to output/."""
+    import json
+    import shutil
+
+    config = load_config()
+    analyzer = PVAnalyzer(config)
+    output_dir = Path(config['output']['directory'])
+    output_dir.mkdir(exist_ok=True)
+
+    click.echo("Analysing PV vs. negative-price windows...")
+    result = analyzer.analyze_all()
+
+    out_file = output_dir / 'pv_analysis.json'
+    with open(out_file, 'w') as f:
+        json.dump(result, f, indent=2, ensure_ascii=False)
+    click.echo(f"✓ {out_file}")
+
+    src_html = Path('web/pv_history.html')
+    if src_html.exists():
+        dst_html = output_dir / 'pv_history.html'
+        shutil.copy2(src_html, dst_html)
+        click.echo(f"✓ {dst_html}")
+
+    total = result.get('total_kwh', 0)
+    neg = result.get('total_negative_window_kwh', 0)
+    pct = result.get('total_negative_window_pct', 0)
+    click.echo(f"\nGesamt: {total} kWh  |  Im Negativfenster: {neg} kWh ({pct} %)")
 
 
 if __name__ == '__main__':

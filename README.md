@@ -9,6 +9,7 @@ This tool:
 - Identifies periods with negative prices (when § 51 EEG applies)
 - Calculates compensation period extensions per § 51a EEG
 - Generates static JSON/CSV files for analysis
+- **Correlates own PV generation with negative-price windows** via HomeAssistant
 
 ## Legal Background
 
@@ -107,6 +108,42 @@ python -m src.cli serve --port 8000
 
 Access files at `http://localhost:8000`
 
+### PV Generation vs. Negative-Price Windows
+
+Correlates your own PV generation data (fetched from HomeAssistant) with negative-price periods to show how many kWh you produced during § 51 EEG windows, broken down by month.
+
+**Setup** — add your HomeAssistant details to `config.yaml`:
+
+```yaml
+homeassistant:
+  url: "http://homeassistant.local:8123"
+  token: "<long-lived-access-token>"   # HA → Profile → Security → Create Token
+  pv_entity: "sensor.pv_gesamtenergieertrag"  # cumulative kWh sensor
+  pv_start_date: "2025-09-09"          # first day with PV data
+```
+
+**Fetch PV data** (fetches once, then caches in `data/pv/`):
+
+```bash
+python -m src.cli pv fetch
+```
+
+**Generate analysis and dashboard page:**
+
+```bash
+python -m src.cli pv generate
+```
+
+This creates:
+- `output/pv_analysis.json` — monthly breakdown of total vs. affected generation
+- `output/pv_history.html` — web dashboard with stacked bar chart and table
+
+Then open `http://localhost:8000/pv_history.html` after `eeg serve`.
+
+**Notes:**
+- HomeAssistant provides 5-minute statistics for the most recent ~3 months; older data is automatically retrieved at hourly resolution
+- Run `eeg pv fetch && eeg pv generate` alongside `eeg update` to keep data current
+
 ### Calculate Compensation Extension
 
 Calculate compensation period extension for a specific installation:
@@ -133,6 +170,12 @@ dates:
 eeg:
   rule_start_date: "2025-02-25"
   compensation_period_years: 20
+
+homeassistant:
+  url: "http://homeassistant.local:8123"
+  token: ""                               # Long-Lived Access Token
+  pv_entity: "sensor.pv_gesamtenergieertrag"
+  pv_start_date: "2025-09-09"
 ```
 
 ## Project Structure
@@ -141,15 +184,21 @@ eeg:
 day-ahead-prices/
 ├── src/
 │   ├── cli.py              # CLI interface
-│   ├── data_fetcher.py     # API integration and caching
+│   ├── data_fetcher.py     # Price API integration and caching
 │   ├── analyzer.py         # Price analysis
 │   ├── compensation.py     # § 51a EEG calculations
 │   ├── output_generator.py # File generation
+│   ├── pv_fetcher.py       # HomeAssistant PV data via WebSocket
+│   ├── pv_analyzer.py      # PV vs. negative-price correlation
 │   └── utils.py            # Utilities
 ├── data/
-│   ├── raw/                # Cached API responses
-│   └── processed/          # Intermediate data
+│   ├── raw/                # Cached price API responses
+│   └── pv/                 # Cached PV generation data (per day)
 ├── output/                 # Generated files
+├── web/
+│   ├── index.html          # Daily price dashboard template
+│   ├── history.html        # Price history dashboard
+│   └── pv_history.html     # PV vs. negative-price dashboard
 ├── tests/                  # Unit tests
 ├── config.yaml             # Configuration
 └── requirements.txt        # Dependencies
