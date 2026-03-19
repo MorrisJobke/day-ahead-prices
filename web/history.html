@@ -251,7 +251,8 @@ function buildYearCards(yearlyStats) {
     el.innerHTML = `
       <h2>${y.year}</h2>
       <div class="year-stat"><span>Negative Stunden</span><span class="neg">${fmtH(y.negative_hours)}</span></div>
-      <div class="year-stat"><span>Negativanteil</span><span class="neg">${fmtPct(y.negative_pct)}</span></div>
+      <div class="year-stat"><span>Negativanteil gesamt</span><span class="neg">${fmtPct(y.negative_pct)}</span></div>
+      <div class="year-stat"><span>Negativanteil Tageslicht</span><span class="neg">${fmtPct(y.daylight_negative_pct)}</span></div>
       <div class="year-stat"><span>Ø Preis</span><span>${fmtEUR(y.avg_price)}</span></div>
       <div class="year-stat"><span>Ø Tages­spread</span><span>${fmtEUR(y.avg_daily_spread)}</span></div>
       <div class="year-stat"><span>Analysierte Stunden</span><span>${fmtH(y.total_hours)}</span></div>
@@ -498,7 +499,7 @@ function buildTable(monthlyStats) {
         <th data-col="label">Monat</th>
         <th data-col="days_analyzed">Tage</th>
         <th data-col="negative_hours">Neg. h</th>
-        <th data-col="negative_pct">Neg. %</th>
+        <th data-col="daylight_negative_pct">Neg. % (Tageslicht)</th>
         <th data-col="avg_price">Ø Preis</th>
         <th data-col="avg_daily_spread">Ø Spread</th>
         <th data-col="max_daily_spread">Max Spread</th>
@@ -530,7 +531,7 @@ function buildTable(monthlyStats) {
         <td>${ms.label}</td>
         <td class="dim">${ms.days_analyzed}</td>
         <td class="${ms.negative_hours > 0 ? 'neg' : 'dim'}">${fmtH(ms.negative_hours)}</td>
-        <td class="${ms.negative_pct > 0 ? 'neg' : 'dim'}">${fmtPct(ms.negative_pct)}</td>
+        <td class="${ms.daylight_negative_pct > 0 ? 'neg' : 'dim'}">${fmtPct(ms.daylight_negative_pct)}</td>
         <td>${fmtEUR(ms.avg_price)}</td>
         <td>${fmtEUR(ms.avg_daily_spread)}</td>
         <td>${fmtEUR(ms.max_daily_spread)}</td>

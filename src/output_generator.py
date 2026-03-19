@@ -1,13 +1,58 @@
 """Output generator for creating static analysis files."""
+import calendar
 import json
+import math
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
 
 from src.analyzer import PriceAnalyzer
 from src.compensation import CompensationCalculator
 from src.utils import ensure_dir, load_config
+
+
+def _sunrise_sunset_utc(date_str: str, lat: float, lng: float) -> Tuple[Optional[float], Optional[float]]:
+    """Return (sunrise_unix_utc, sunset_unix_utc) for a given date and location.
+
+    Uses a simplified NOAA algorithm (accurate to ~2 minutes).
+    Returns (None, None) for polar night; (0, 86400) equivalent offsets for polar day.
+    """
+    parts = date_str.split('-')
+    midnight_utc = calendar.timegm((int(parts[0]), int(parts[1]), int(parts[2]), 0, 0, 0))
+
+    # Days from J2000.0 (noon Jan 1, 2000 UTC = Unix 946728000) to noon of date
+    j2000_noon = 946728000
+    n = (midnight_utc + 43200 - j2000_noon) / 86400.0
+
+    # Solar mean longitude and mean anomaly (degrees)
+    L = (280.460 + 0.9856474 * n) % 360
+    g = math.radians((357.528 + 0.9856003 * n) % 360)
+
+    # Ecliptic longitude, obliquity, declination
+    lam = math.radians(L + 1.915 * math.sin(g) + 0.020 * math.sin(2 * g))
+    eps = math.radians(23.439 - 0.0000004 * n)
+    dec = math.asin(math.sin(eps) * math.sin(lam))
+
+    # Equation of time (hours): L − RA in degrees, normalised to [−180, 180]
+    ra_deg = math.degrees(math.atan2(math.cos(eps) * math.sin(lam), math.cos(lam))) % 360
+    eot_h = ((L - ra_deg + 180) % 360 - 180) / 15.0
+
+    # Solar noon in UTC hours; hour angle for zenith=90.833° (refraction + solar disk)
+    solar_noon_h = 12.0 - lng / 15.0 - eot_h
+    lat_r = math.radians(lat)
+    cos_ha = (math.cos(math.radians(90.833)) - math.sin(lat_r) * math.sin(dec)) / \
+             (math.cos(lat_r) * math.cos(dec))
+
+    if cos_ha <= -1:  # polar day
+        return float(midnight_utc), float(midnight_utc + 86400)
+    if cos_ha >= 1:   # polar night
+        return None, None
+
+    ha_h = math.degrees(math.acos(cos_ha)) / 15.0
+    sunrise = midnight_utc + (solar_noon_h - ha_h) * 3600.0
+    sunset = midnight_utc + (solar_noon_h + ha_h) * 3600.0
+    return sunrise, sunset
 
 
 class OutputGenerator:
@@ -271,6 +316,10 @@ class OutputGenerator:
         if not dates:
             return None
 
+        loc = self.config.get('location', {})
+        lat = loc.get('lat', 51.0)
+        lng = loc.get('lng', 10.0)
+
         # month_data: {(year, month): {...accumulators...}}
         month_data: Dict = {}
 
@@ -282,8 +331,12 @@ class OutputGenerator:
             if not prices:
                 continue
 
+            timestamps = raw.get('unix_seconds') or []
             is_qh = len(prices) >= 90
             slot_hours = 0.25 if is_qh else 1.0
+            slot_secs = slot_hours * 3600.0
+
+            sunrise_ts, sunset_ts = _sunrise_sunset_utc(date_str, lat, lng)
 
             year, month, _ = (int(x) for x in date_str.split('-'))
             key = (year, month)
@@ -291,6 +344,8 @@ class OutputGenerator:
                 month_data[key] = {
                     'days': 0,
                     'total_hours': 0.0,
+                    'daylight_hours': 0.0,
+                    'daylight_neg_hours': 0.0,
                     'price_sum': 0.0,
                     'price_count': 0,
                     'daily_spreads': [],
@@ -309,7 +364,7 @@ class OutputGenerator:
             day_max = max(prices)
             md['daily_spreads'].append(day_max - day_min)
 
-            for p in prices:
+            for i, p in enumerate(prices):
                 md['total_hours'] += slot_hours
                 md['price_sum'] += p * slot_hours
                 md['price_count'] += 1
@@ -323,6 +378,15 @@ class OutputGenerator:
                     md['buckets']['near_zero_pos'] += slot_hours
                 else:
                     md['buckets']['normal'] += slot_hours
+
+                # Daylight check: slot overlaps [sunrise, sunset)
+                if sunrise_ts is not None and i < len(timestamps):
+                    slot_start = float(timestamps[i])
+                    slot_end = slot_start + slot_secs
+                    if slot_start < sunset_ts and slot_end > sunrise_ts:
+                        md['daylight_hours'] += slot_hours
+                        if p < 0:
+                            md['daylight_neg_hours'] += slot_hours
 
         # Build monthly_stats list
         month_labels = {
@@ -339,6 +403,8 @@ class OutputGenerator:
             )
             spreads = md['daily_spreads']
             avg_price = md['price_sum'] / total_hours if total_hours > 0 else 0.0
+            dl_hours = md['daylight_hours']
+            dl_neg_hours = md['daylight_neg_hours']
             monthly_stats.append({
                 'year': year,
                 'month': month,
@@ -351,6 +417,9 @@ class OutputGenerator:
                 'buckets': {k: round(v, 2) for k, v in md['buckets'].items()},
                 'negative_hours': round(neg_hours, 2),
                 'negative_pct': round(neg_hours / total_hours * 100, 2) if total_hours > 0 else 0.0,
+                'daylight_hours': round(dl_hours, 2),
+                'daylight_negative_hours': round(dl_neg_hours, 2),
+                'daylight_negative_pct': round(dl_neg_hours / dl_hours * 100, 2) if dl_hours > 0 else 0.0,
             })
 
         # Build yearly_stats list
@@ -361,6 +430,8 @@ class OutputGenerator:
                 year_data[y] = {
                     'months': 0,
                     'total_hours': 0.0,
+                    'daylight_hours': 0.0,
+                    'daylight_neg_hours': 0.0,
                     'price_sum': 0.0,
                     'spread_sum': 0.0,
                     'buckets': {
@@ -374,6 +445,8 @@ class OutputGenerator:
             yd = year_data[y]
             yd['months'] += 1
             yd['total_hours'] += ms['total_hours']
+            yd['daylight_hours'] += ms['daylight_hours']
+            yd['daylight_neg_hours'] += ms['daylight_negative_hours']
             yd['price_sum'] += ms['avg_price'] * ms['total_hours']
             yd['spread_sum'] += ms['avg_daily_spread']
             for bk, bv in ms['buckets'].items():
@@ -382,6 +455,8 @@ class OutputGenerator:
         yearly_stats = []
         for year, yd in sorted(year_data.items()):
             th = yd['total_hours']
+            dl_h = yd['daylight_hours']
+            dl_neg = yd['daylight_neg_hours']
             neg_hours = (
                 yd['buckets']['deeply_negative'] +
                 yd['buckets']['negative'] +
@@ -396,6 +471,9 @@ class OutputGenerator:
                 'buckets': {k: round(v, 2) for k, v in yd['buckets'].items()},
                 'negative_hours': round(neg_hours, 2),
                 'negative_pct': round(neg_hours / th * 100, 2) if th > 0 else 0.0,
+                'daylight_hours': round(dl_h, 2),
+                'daylight_negative_hours': round(dl_neg, 2),
+                'daylight_negative_pct': round(dl_neg / dl_h * 100, 2) if dl_h > 0 else 0.0,
             })
 
         output = {
