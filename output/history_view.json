@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-24T13:48:05.819273+01:00",
+  "generated_at": "2026-03-24T14:58:54.039528+01:00",
   "monthly_stats": [
     {
       "year": 2020,
@@ -1633,23 +1633,23 @@
       "year": 2026,
       "month": 3,
       "label": "M\u00e4r 2026",
-      "days_analyzed": 24,
-      "total_hours": 576.0,
-      "avg_price": 104.28,
-      "avg_daily_spread": 193.94,
+      "days_analyzed": 25,
+      "total_hours": 600.0,
+      "avg_price": 101.62,
+      "avg_daily_spread": 193.2,
       "max_daily_spread": 404.24,
       "buckets": {
         "deeply_negative": 0.0,
         "negative": 1.25,
-        "near_zero_neg": 24.0,
-        "near_zero_pos": 26.25,
-        "normal": 524.5
+        "near_zero_neg": 30.75,
+        "near_zero_pos": 35.0,
+        "normal": 533.0
       },
-      "negative_hours": 25.25,
-      "negative_pct": 4.38,
-      "daylight_hours": 286.5,
-      "daylight_negative_hours": 25.25,
-      "daylight_negative_pct": 8.81
+      "negative_hours": 32.0,
+      "negative_pct": 5.33,
+      "daylight_hours": 299.25,
+      "daylight_negative_hours": 30.25,
+      "daylight_negative_pct": 10.11
     }
   ],
   "yearly_stats": [
@@ -1770,21 +1770,21 @@
     {
       "year": 2026,
       "months_analyzed": 3,
-      "total_hours": 1992.0,
-      "avg_price": 103.85,
-      "avg_daily_spread": 120.64,
+      "total_hours": 2016.0,
+      "avg_price": 103.07,
+      "avg_daily_spread": 120.4,
       "buckets": {
         "deeply_negative": 0.0,
         "negative": 1.25,
-        "near_zero_neg": 32.25,
-        "near_zero_pos": 51.25,
-        "normal": 1907.25
+        "near_zero_neg": 39.0,
+        "near_zero_pos": 60.0,
+        "normal": 1915.75
       },
-      "negative_hours": 33.5,
-      "negative_pct": 1.68,
-      "daylight_hours": 844.25,
-      "daylight_negative_hours": 33.5,
-      "daylight_negative_pct": 3.97
+      "negative_hours": 40.25,
+      "negative_pct": 2.0,
+      "daylight_hours": 857.0,
+      "daylight_negative_hours": 38.5,
+      "daylight_negative_pct": 4.49
     }
   ]
 }
