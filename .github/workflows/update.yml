@@ -4,9 +4,11 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '30 13 * * *'  # 12:30 UTC = after EPEX publishes tomorrow's prices (14:30 CET)
-    - cron: '30 12 * * *'  # 12:30 UTC = after EPEX publishes tomorrow's prices (14:30 CEST)
-    - cron: '0 5 * * *'    # 05:00 UTC = morning catch-up run
+    # Every 10 minutes between 13:30 and 15:00 MEZ/MESZ (UTC+1/UTC+2).
+    # To cover both offsets the window in UTC is 11:30–14:00.
+    - cron: '30,40,50 11 * * *'  # 11:30–11:50 UTC (13:30–13:50 MESZ)
+    - cron: '*/10 12,13 * * *'   # 12:00–13:50 UTC (both seasons)
+    - cron: '0 14 * * *'         # 14:00 UTC     (15:00 MEZ)
   workflow_dispatch:
 
 permissions:
@@ -19,16 +21,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check if new data is needed
+        id: check
+        run: |
+          BERLIN_HOUR=$(TZ='Europe/Berlin' date +%H)
+          if [ "$BERLIN_HOUR" -ge 13 ]; then
+            TARGET=$(TZ='Europe/Berlin' date -d '+1 day' +%Y-%m-%d)
+          else
+            TARGET=$(TZ='Europe/Berlin' date +%Y-%m-%d)
+          fi
+          echo "target=${TARGET}" >> $GITHUB_OUTPUT
+          if [ -f "data/raw/${TARGET}.json" ]; then
+            echo "Data for ${TARGET} already present – skipping"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/setup-python@v5
+        if: steps.check.outputs.skip != 'true'
         with:
           python-version: '3.12'
           cache: pip
 
       - run: pip install -r requirements.txt
+        if: steps.check.outputs.skip != 'true'
 
       - run: python3 -m src.cli update
+        if: steps.check.outputs.skip != 'true'
 
       - name: Commit data and output to main
+        if: steps.check.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -42,6 +65,7 @@ jobs:
           git push
 
       - name: Deploy output/ to gh-pages
+        if: steps.check.outputs.skip != 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
