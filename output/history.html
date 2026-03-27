@@ -34,16 +34,18 @@
       gap: 0.75rem;
     }
     header h1 { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
-    .back-link {
-      color: #94a3b8;
-      text-decoration: none;
+    .nav-btn {
+      padding: 0.35rem 0.875rem;
+      border-radius: 6px;
       font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      transition: color 0.15s;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
     }
-    .back-link:hover { color: #f8fafc; }
+    .nav-btn.active   { background: #3b82f6; color: #fff; }
+    .nav-btn.inactive { background: #1e293b; color: #94a3b8; }
+    .nav-btn:hover:not(.active) { background: #2d3f55; color: #f8fafc; }
+    .page-nav { display: flex; gap: 0.4rem; }
 
     /* ── Layout ─────────────────────────────────────── */
     main {
@@ -173,7 +175,11 @@
 
 <header>
   <h1>📊 Preisverlauf &amp; Statistik</h1>
-  <a class="back-link" href="index.html">← Tagesansicht</a>
+  <nav class="page-nav">
+    <a href="index.html"      class="nav-btn inactive">Preise</a>
+    <a href="history.html"    class="nav-btn active">Verlauf</a>
+    <a href="pv_history.html" class="nav-btn inactive">☀ PV</a>
+  </nav>
 </header>
 
 <main id="main">
