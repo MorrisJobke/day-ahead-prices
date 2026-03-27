@@ -1,0 +1,470 @@
+{
+  "year": 2023,
+  "month": 10,
+  "days_analyzed": 31,
+  "total_units": 745,
+  "negative_units": 38,
+  "negative_hours": 38.0,
+  "daily_breakdown": [
+    {
+      "date": "2023-10-01",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 3,
+      "negative_hours": 3.0,
+      "negative_percentage": 12.5,
+      "periods": [
+        {
+          "start": "2023-10-01T12:00:00+02:00",
+          "end": "2023-10-01T14:59:59+02:00",
+          "duration_units": 3,
+          "duration_hours": 3.0,
+          "min_price": -1.93,
+          "max_price": -0.01,
+          "avg_price": -0.89
+        }
+      ],
+      "min_price": -1.93,
+      "max_price": 130.0,
+      "avg_price": 74.04416666666667
+    },
+    {
+      "date": "2023-10-02",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 87.92,
+      "max_price": 245.05,
+      "avg_price": 118.15041666666667
+    },
+    {
+      "date": "2023-10-03",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 7,
+      "negative_hours": 7.0,
+      "negative_percentage": 29.166666666666668,
+      "periods": [
+        {
+          "start": "2023-10-03T10:00:00+02:00",
+          "end": "2023-10-03T16:59:59+02:00",
+          "duration_units": 7,
+          "duration_hours": 7.0,
+          "min_price": -11.07,
+          "max_price": -0.05,
+          "avg_price": -5.047142857142857
+        }
+      ],
+      "min_price": -11.07,
+      "max_price": 97.58,
+      "avg_price": 22.955000000000002
+    },
+    {
+      "date": "2023-10-04",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 7.77,
+      "max_price": 127.36,
+      "avg_price": 69.49208333333333
+    },
+    {
+      "date": "2023-10-05",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 61.4,
+      "max_price": 250.28,
+      "avg_price": 101.60916666666667
+    },
+    {
+      "date": "2023-10-06",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 0.52,
+      "max_price": 120.69,
+      "avg_price": 71.60125000000001
+    },
+    {
+      "date": "2023-10-07",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 0.04,
+      "max_price": 108.91,
+      "avg_price": 44.95416666666667
+    },
+    {
+      "date": "2023-10-08",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 54.6,
+      "max_price": 162.58,
+      "avg_price": 90.6425
+    },
+    {
+      "date": "2023-10-09",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 75.0,
+      "max_price": 221.7,
+      "avg_price": 116.01083333333334
+    },
+    {
+      "date": "2023-10-10",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 68.9,
+      "max_price": 201.92,
+      "avg_price": 112.38541666666667
+    },
+    {
+      "date": "2023-10-11",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 2,
+      "negative_hours": 2.0,
+      "negative_percentage": 8.333333333333332,
+      "periods": [
+        {
+          "start": "2023-10-11T13:00:00+02:00",
+          "end": "2023-10-11T14:59:59+02:00",
+          "duration_units": 2,
+          "duration_hours": 2.0,
+          "min_price": -0.06,
+          "max_price": -0.04,
+          "avg_price": -0.05
+        }
+      ],
+      "min_price": -0.06,
+      "max_price": 132.14,
+      "avg_price": 59.794999999999995
+    },
+    {
+      "date": "2023-10-12",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 78.31,
+      "max_price": 220.99,
+      "avg_price": 122.70916666666665
+    },
+    {
+      "date": "2023-10-13",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 1,
+      "negative_hours": 1.0,
+      "negative_percentage": 4.166666666666666,
+      "periods": [
+        {
+          "start": "2023-10-13T23:00:00+02:00",
+          "end": "2023-10-13T23:59:59+02:00",
+          "duration_units": 1,
+          "duration_hours": 1.0,
+          "min_price": -0.81,
+          "max_price": -0.81,
+          "avg_price": -0.81
+        }
+      ],
+      "min_price": -0.81,
+      "max_price": 145.25,
+      "avg_price": 68.40625
+    },
+    {
+      "date": "2023-10-14",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 13,
+      "negative_hours": 13.0,
+      "negative_percentage": 54.166666666666664,
+      "periods": [
+        {
+          "start": "2023-10-14T00:00:00+02:00",
+          "end": "2023-10-14T07:59:59+02:00",
+          "duration_units": 8,
+          "duration_hours": 8.0,
+          "min_price": -2.21,
+          "max_price": -0.02,
+          "avg_price": -1.305
+        },
+        {
+          "start": "2023-10-14T11:00:00+02:00",
+          "end": "2023-10-14T15:59:59+02:00",
+          "duration_units": 5,
+          "duration_hours": 5.0,
+          "min_price": -1.39,
+          "max_price": -0.05,
+          "avg_price": -0.71
+        }
+      ],
+      "min_price": -2.21,
+      "max_price": 129.97,
+      "avg_price": 26.528333333333336
+    },
+    {
+      "date": "2023-10-15",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 4,
+      "negative_hours": 4.0,
+      "negative_percentage": 16.666666666666664,
+      "periods": [
+        {
+          "start": "2023-10-15T12:00:00+02:00",
+          "end": "2023-10-15T15:59:59+02:00",
+          "duration_units": 4,
+          "duration_hours": 4.0,
+          "min_price": -1.76,
+          "max_price": -0.09,
+          "avg_price": -0.77
+        }
+      ],
+      "min_price": -1.76,
+      "max_price": 139.9,
+      "avg_price": 39.61708333333333
+    },
+    {
+      "date": "2023-10-16",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 94.43,
+      "max_price": 240.0,
+      "avg_price": 133.69875000000002
+    },
+    {
+      "date": "2023-10-17",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 98.4,
+      "max_price": 191.08,
+      "avg_price": 130.12416666666667
+    },
+    {
+      "date": "2023-10-18",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 47.48,
+      "max_price": 166.91,
+      "avg_price": 98.44458333333334
+    },
+    {
+      "date": "2023-10-19",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 8.15,
+      "max_price": 138.87,
+      "avg_price": 93.40875
+    },
+    {
+      "date": "2023-10-20",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 23.05,
+      "max_price": 124.76,
+      "avg_price": 87.23666666666668
+    },
+    {
+      "date": "2023-10-21",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 10.0,
+      "max_price": 128.4,
+      "avg_price": 54.319583333333334
+    },
+    {
+      "date": "2023-10-22",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 15.63,
+      "max_price": 139.02,
+      "avg_price": 63.947916666666664
+    },
+    {
+      "date": "2023-10-23",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 92.76,
+      "max_price": 198.39,
+      "avg_price": 125.02416666666666
+    },
+    {
+      "date": "2023-10-24",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 89.46,
+      "max_price": 154.07,
+      "avg_price": 117.98583333333333
+    },
+    {
+      "date": "2023-10-25",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 86.06,
+      "max_price": 157.71,
+      "avg_price": 124.30583333333334
+    },
+    {
+      "date": "2023-10-26",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 87.04,
+      "max_price": 150.99,
+      "avg_price": 121.34541666666667
+    },
+    {
+      "date": "2023-10-27",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 93.7,
+      "max_price": 154.55,
+      "avg_price": 118.35000000000001
+    },
+    {
+      "date": "2023-10-28",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 47.48,
+      "max_price": 148.96,
+      "avg_price": 83.36583333333334
+    },
+    {
+      "date": "2023-10-29",
+      "resolution": "hourly",
+      "total_units": 25,
+      "negative_units": 8,
+      "negative_hours": 8.0,
+      "negative_percentage": 32.0,
+      "periods": [
+        {
+          "start": "2023-10-29T03:00:00+01:00",
+          "end": "2023-10-29T07:59:59+01:00",
+          "duration_units": 5,
+          "duration_hours": 5.0,
+          "min_price": -0.39,
+          "max_price": -0.07,
+          "avg_price": -0.268
+        },
+        {
+          "start": "2023-10-29T10:00:00+01:00",
+          "end": "2023-10-29T12:59:59+01:00",
+          "duration_units": 3,
+          "duration_hours": 3.0,
+          "min_price": -0.21,
+          "max_price": -0.03,
+          "avg_price": -0.10666666666666665
+        }
+      ],
+      "min_price": -0.39,
+      "max_price": 83.9,
+      "avg_price": 23.0304
+    },
+    {
+      "date": "2023-10-30",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 8.0,
+      "max_price": 171.0,
+      "avg_price": 92.88625000000002
+    },
+    {
+      "date": "2023-10-31",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 61.97,
+      "max_price": 172.04,
+      "avg_price": 104.95
+    }
+  ]
+}

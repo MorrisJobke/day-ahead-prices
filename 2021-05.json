@@ -1,0 +1,452 @@
+{
+  "year": 2021,
+  "month": 5,
+  "days_analyzed": 31,
+  "total_units": 744,
+  "negative_units": 38,
+  "negative_hours": 38.0,
+  "daily_breakdown": [
+    {
+      "date": "2021-05-01",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 45.53,
+      "max_price": 69.29,
+      "avg_price": 56.685
+    },
+    {
+      "date": "2021-05-02",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 0.01,
+      "max_price": 67.11,
+      "avg_price": 43.809583333333336
+    },
+    {
+      "date": "2021-05-03",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 49.79,
+      "max_price": 87.93,
+      "avg_price": 62.42583333333332
+    },
+    {
+      "date": "2021-05-04",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 0.1,
+      "max_price": 50.59,
+      "avg_price": 30.259583333333335
+    },
+    {
+      "date": "2021-05-05",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 5,
+      "negative_hours": 5.0,
+      "negative_percentage": 20.833333333333336,
+      "periods": [
+        {
+          "start": "2021-05-05T12:00:00+02:00",
+          "end": "2021-05-05T16:59:59+02:00",
+          "duration_units": 5,
+          "duration_hours": 5.0,
+          "min_price": -36.71,
+          "max_price": -0.02,
+          "avg_price": -20.704
+        }
+      ],
+      "min_price": -36.71,
+      "max_price": 68.19,
+      "avg_price": 31.80666666666666
+    },
+    {
+      "date": "2021-05-06",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 47.59,
+      "max_price": 92.73,
+      "avg_price": 64.96583333333334
+    },
+    {
+      "date": "2021-05-07",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 52.22,
+      "max_price": 101.5,
+      "avg_price": 71.29833333333333
+    },
+    {
+      "date": "2021-05-08",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 14.56,
+      "max_price": 69.95,
+      "avg_price": 50.73875
+    },
+    {
+      "date": "2021-05-09",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 8,
+      "negative_hours": 8.0,
+      "negative_percentage": 33.33333333333333,
+      "periods": [
+        {
+          "start": "2021-05-09T10:00:00+02:00",
+          "end": "2021-05-09T17:59:59+02:00",
+          "duration_units": 8,
+          "duration_hours": 8.0,
+          "min_price": -66.18,
+          "max_price": -0.57,
+          "avg_price": -31.41125
+        }
+      ],
+      "min_price": -66.18,
+      "max_price": 60.75,
+      "avg_price": 3.6237500000000007
+    },
+    {
+      "date": "2021-05-10",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 28.03,
+      "max_price": 90.12,
+      "avg_price": 57.45583333333334
+    },
+    {
+      "date": "2021-05-11",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 56.67,
+      "max_price": 93.37,
+      "avg_price": 72.17166666666667
+    },
+    {
+      "date": "2021-05-12",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 54.81,
+      "max_price": 86.12,
+      "avg_price": 68.74541666666666
+    },
+    {
+      "date": "2021-05-13",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 48.0,
+      "max_price": 79.96,
+      "avg_price": 62.73541666666666
+    },
+    {
+      "date": "2021-05-14",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 60.0,
+      "max_price": 87.02,
+      "avg_price": 71.80166666666666
+    },
+    {
+      "date": "2021-05-15",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 45.05,
+      "max_price": 75.65,
+      "avg_price": 60.201249999999995
+    },
+    {
+      "date": "2021-05-16",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 1.0,
+      "max_price": 84.89,
+      "avg_price": 39.869166666666665
+    },
+    {
+      "date": "2021-05-17",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 52.76,
+      "max_price": 101.51,
+      "avg_price": 73.70375
+    },
+    {
+      "date": "2021-05-18",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 56.68,
+      "max_price": 90.07,
+      "avg_price": 74.17875
+    },
+    {
+      "date": "2021-05-19",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 62.08,
+      "max_price": 101.82,
+      "avg_price": 77.71249999999999
+    },
+    {
+      "date": "2021-05-20",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 54.07,
+      "max_price": 94.9,
+      "avg_price": 69.98958333333333
+    },
+    {
+      "date": "2021-05-21",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 2,
+      "negative_hours": 2.0,
+      "negative_percentage": 8.333333333333332,
+      "periods": [
+        {
+          "start": "2021-05-21T14:00:00+02:00",
+          "end": "2021-05-21T15:59:59+02:00",
+          "duration_units": 2,
+          "duration_hours": 2.0,
+          "min_price": -9.47,
+          "max_price": -5.83,
+          "avg_price": -7.65
+        }
+      ],
+      "min_price": -9.47,
+      "max_price": 66.22,
+      "avg_price": 31.33875
+    },
+    {
+      "date": "2021-05-22",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 14,
+      "negative_hours": 14.0,
+      "negative_percentage": 58.333333333333336,
+      "periods": [
+        {
+          "start": "2021-05-22T04:00:00+02:00",
+          "end": "2021-05-22T17:59:59+02:00",
+          "duration_units": 14,
+          "duration_hours": 14.0,
+          "min_price": -69.0,
+          "max_price": -0.05,
+          "avg_price": -29.319285714285716
+        }
+      ],
+      "min_price": -69.0,
+      "max_price": 48.8,
+      "avg_price": -7.039166666666667
+    },
+    {
+      "date": "2021-05-23",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 4,
+      "negative_hours": 4.0,
+      "negative_percentage": 16.666666666666664,
+      "periods": [
+        {
+          "start": "2021-05-23T13:00:00+02:00",
+          "end": "2021-05-23T16:59:59+02:00",
+          "duration_units": 4,
+          "duration_hours": 4.0,
+          "min_price": -25.0,
+          "max_price": -7.83,
+          "avg_price": -16.445
+        }
+      ],
+      "min_price": -25.0,
+      "max_price": 80.34,
+      "avg_price": 21.145
+    },
+    {
+      "date": "2021-05-24",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 1,
+      "negative_hours": 1.0,
+      "negative_percentage": 4.166666666666666,
+      "periods": [
+        {
+          "start": "2021-05-24T11:00:00+02:00",
+          "end": "2021-05-24T11:59:59+02:00",
+          "duration_units": 1,
+          "duration_hours": 1.0,
+          "min_price": -0.03,
+          "max_price": -0.03,
+          "avg_price": -0.03
+        }
+      ],
+      "min_price": -0.03,
+      "max_price": 76.23,
+      "avg_price": 31.645416666666666
+    },
+    {
+      "date": "2021-05-25",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 40.3,
+      "max_price": 84.65,
+      "avg_price": 59.78041666666667
+    },
+    {
+      "date": "2021-05-26",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 51.08,
+      "max_price": 84.59,
+      "avg_price": 65.60583333333334
+    },
+    {
+      "date": "2021-05-27",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 52.71,
+      "max_price": 88.87,
+      "avg_price": 71.7675
+    },
+    {
+      "date": "2021-05-28",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 58.34,
+      "max_price": 93.01,
+      "avg_price": 73.60208333333334
+    },
+    {
+      "date": "2021-05-29",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 15.01,
+      "max_price": 72.02,
+      "avg_price": 56.487916666666656
+    },
+    {
+      "date": "2021-05-30",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 4,
+      "negative_hours": 4.0,
+      "negative_percentage": 16.666666666666664,
+      "periods": [
+        {
+          "start": "2021-05-30T13:00:00+02:00",
+          "end": "2021-05-30T16:59:59+02:00",
+          "duration_units": 4,
+          "duration_hours": 4.0,
+          "min_price": -16.86,
+          "max_price": -0.93,
+          "avg_price": -7.6850000000000005
+        }
+      ],
+      "min_price": -16.86,
+      "max_price": 79.29,
+      "avg_price": 37.84791666666667
+    },
+    {
+      "date": "2021-05-31",
+      "resolution": "hourly",
+      "total_units": 24,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 53.94,
+      "max_price": 86.73,
+      "avg_price": 67.45708333333333
+    }
+  ]
+}

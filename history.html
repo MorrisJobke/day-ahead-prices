@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Preisverlauf & Statistik</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { background: #0f172a; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(#0f172a 8rem, #f1f5f9 8rem);
+      color: #0f172a;
+      min-height: 100vh;
+      padding-bottom: 2rem;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    header {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 0.875rem 1.25rem;
+      padding-top: calc(0.875rem + env(safe-area-inset-top));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    header h1 { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
+    .back-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: #f8fafc; }
+
+    /* ── Layout ─────────────────────────────────────── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.125rem 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+    }
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.875rem;
+    }
+    .section-caption {
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-top: 0.5rem;
+    }
+
+    /* ── Year summary cards ──────────────────────────── */
+    .year-cards {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .year-card {
+      flex: 1;
+      min-width: 200px;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 1rem 1.125rem;
+      border-left: 4px solid #3b82f6;
+    }
+    .year-card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.625rem; color: #0f172a; }
+    .year-stat { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem; color: #374151; }
+    .year-stat span:last-child { font-weight: 600; }
+    .year-stat .neg { color: #dc2626; }
+
+    /* ── Heatmap ─────────────────────────────────────── */
+    .heatmap-wrap { overflow-x: auto; }
+    .heatmap {
+      display: grid;
+      gap: 4px;
+      min-width: 300px;
+    }
+    .hm-row { display: contents; }
+    .hm-cell {
+      border-radius: 5px;
+      padding: 0.3rem 0.4rem;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      min-width: 70px;
+      line-height: 1.4;
+    }
+    .hm-header { background: transparent; font-size: 0.7rem; font-weight: 700; color: #64748b; text-align: center; padding: 0.2rem 0.4rem; }
+    .hm-month-label { background: transparent; font-size: 0.75rem; font-weight: 600; color: #374151; text-align: right; padding: 0.3rem 0.5rem 0.3rem 0; display: flex; align-items: center; justify-content: flex-end; }
+
+    /* ── Toggle button ───────────────────────────────── */
+    .toggle-btn {
+      padding: 0.3rem 0.875rem;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: inherit;
+      background: #f8fafc;
+      color: #374151;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .toggle-btn.active { background: #60a5fa; color: #fff; border-color: #60a5fa; }
+    .toggle-btn:hover:not(.active) { background: #e2e8f0; }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.875rem; flex-wrap: wrap; gap: 0.5rem; }
+    .chart-header .section-title { margin-bottom: 0; }
+
+    /* ── Chart wrap ──────────────────────────────────── */
+    .chart-wrap { position: relative; height: 280px; }
+    .chart-wrap.tall { height: 320px; }
+
+    /* ── Table ───────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    thead th {
+      text-align: left;
+      padding: 0.45rem 0.625rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    thead th:hover { color: #0f172a; }
+    thead th.sorted-asc::after  { content: ' ↑'; }
+    thead th.sorted-desc::after { content: ' ↓'; }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody tr.year-sep td { border-top: 2px solid #cbd5e1; font-weight: 700; background: #f1f5f9; }
+    td { padding: 0.4rem 0.625rem; white-space: nowrap; color: #374151; }
+    td.neg { color: #dc2626; font-weight: 600; }
+    td.dim { color: #64748b; }
+
+    /* ── Footer ──────────────────────────────────────── */
+    footer { text-align: center; color: #94a3b8; font-size: 0.72rem; margin-top: 0.25rem; }
+
+    /* ── Loading / error ─────────────────────────────── */
+    .notice { color: #64748b; font-size: 0.875rem; }
+    .error  { color: #dc2626; }
+    code { font-family: monospace; background: #f1f5f9; padding: 0.1em 0.3em; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📊 Preisverlauf &amp; Statistik</h1>
+  <a class="back-link" href="index.html">← Tagesansicht</a>
+</header>
+
+<main id="main">
+  <div class="card notice">Lade Verlaufsdaten…</div>
+</main>
+<footer id="footer"></footer>
+
+<script>
+'use strict';
+
+/* ── Helpers ──────────────────────────────────────────── */
+function fmtH(h) {
+  if (h == null) return '—';
+  return h.toFixed(1) + '\u00a0h';
+}
+function fmtEUR(v) {
+  if (v == null) return '—';
+  return v.toFixed(1) + '\u00a0€/MWh';
+}
+function fmtPct(v) {
+  if (v == null) return '—';
+  return v.toFixed(2) + '\u00a0%';
+}
+
+/* ── Heatmap colour: white → orange → deep red ────────── */
+function heatColor(hours, maxHours) {
+  if (maxHours <= 0) return { bg: '#f8fafc', fg: '#64748b' };
+  const t = Math.min(hours / maxHours, 1);
+  // 0 → white, 0.5 → orange, 1 → deep red
+  let r, g, b;
+  if (t < 0.5) {
+    const u = t * 2;
+    r = Math.round(255);
+    g = Math.round(255 - u * (255 - 147));
+    b = Math.round(255 - u * 255);
+  } else {
+    const u = (t - 0.5) * 2;
+    r = Math.round(255);
+    g = Math.round(147 - u * 147);
+    b = 0;
+  }
+  const fg = t > 0.55 ? '#fff' : '#374151';
+  return { bg: `rgb(${r},${g},${b})`, fg };
+}
+
+/* ── Bucket colour palette ────────────────────────────── */
+const BUCKET_COLORS = {
+  deeply_negative: '#ef4444',
+  negative:        '#f97316',
+  near_zero_neg:   '#facc15',
+  near_zero_pos:   '#4ade80',
+  normal:          '#60a5fa',
+};
+const BUCKET_LABELS = {
+  deeply_negative: 'Stark negativ (<−50)',
+  negative:        'Negativ (−50…−10)',
+  near_zero_neg:   'Leicht negativ (−10…0)',
+  near_zero_pos:   'Nahe Null (0…10)',
+  normal:          'Normal / hoch (>10)',
+};
+
+/* ── Section A: Year summary cards ───────────────────── */
+function buildYearCards(yearlyStats) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = '<div class="section-title">Jahresübersicht</div>';
+
+  const row = document.createElement('div');
+  row.className = 'year-cards';
+
+  for (const y of yearlyStats) {
+    const el = document.createElement('div');
+    el.className = 'year-card';
+    const maxSpread = yearlyStats.reduce((m, s) => Math.max(m, s.avg_daily_spread), 0);
+    el.innerHTML = `
+      <h2>${y.year}</h2>
+      <div class="year-stat"><span>Negative Stunden</span><span class="neg">${fmtH(y.negative_hours)}</span></div>
+      <div class="year-stat"><span>Negativanteil gesamt</span><span class="neg">${fmtPct(y.negative_pct)}</span></div>
+      <div class="year-stat"><span>Negativanteil Tageslicht</span><span class="neg">${fmtPct(y.daylight_negative_pct)}</span></div>
+      <div class="year-stat"><span>Ø Preis</span><span>${fmtEUR(y.avg_price)}</span></div>
+      <div class="year-stat"><span>Ø Tages­spread</span><span>${fmtEUR(y.avg_daily_spread)}</span></div>
+      <div class="year-stat"><span>Analysierte Stunden</span><span>${fmtH(y.total_hours)}</span></div>
+    `;
+    row.appendChild(el);
+  }
+
+  card.appendChild(row);
+  return card;
+}
+
+/* ── Section B: Heatmap ───────────────────────────────── */
+function buildHeatmap(monthlyStats, yearlyStats) {
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const years = [...new Set(yearlyStats.map(y => y.year))].sort();
+  const MONTHS = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+  // Find max negative hours for colour scaling
+  let maxNeg = 0;
+  for (const ms of monthlyStats) maxNeg = Math.max(maxNeg, ms.negative_hours);
+
+  // Build lookup
+  const lookup = {};
+  for (const ms of monthlyStats) {
+    lookup[`${ms.year}-${ms.month}`] = ms;
+  }
+
+  const colCount = 1 + years.length; // month label + one col per year
+  const grid = document.createElement('div');
+  grid.className = 'heatmap';
+  grid.style.gridTemplateColumns = `auto ${years.map(() => '1fr').join(' ')}`;
+
+  // Header row
+  const emptyHdr = document.createElement('div');
+  emptyHdr.className = 'hm-header';
+  grid.appendChild(emptyHdr);
+  for (const y of years) {
+    const hdr = document.createElement('div');
+    hdr.className = 'hm-header';
+    hdr.textContent = y;
+    grid.appendChild(hdr);
+  }
+
+  // Month rows
+  for (let m = 1; m <= 12; m++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'hm-month-label';
+    lbl.textContent = MONTHS[m - 1];
+    grid.appendChild(lbl);
+
+    for (const y of years) {
+      const ms = lookup[`${y}-${m}`];
+      const cell = document.createElement('div');
+      cell.className = 'hm-cell';
+      if (!ms) {
+        cell.textContent = '—';
+        cell.style.background = '#f1f5f9';
+        cell.style.color = '#cbd5e1';
+      } else {
+        const { bg, fg } = heatColor(ms.negative_hours, maxNeg);
+        cell.style.background = bg;
+        cell.style.color = fg;
+        cell.textContent = ms.negative_hours > 0 ? fmtH(ms.negative_hours) : '0 h';
+        cell.title = `${MONTHS[m-1]} ${y}: ${ms.negative_hours.toFixed(1)} h negativ (${ms.negative_pct.toFixed(2)} %)`;
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  const title = document.createElement('div');
+  title.className = 'section-title';
+  title.textContent = 'Negative Stunden pro Monat';
+  card.appendChild(title);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'heatmap-wrap';
+  wrap.appendChild(grid);
+  card.appendChild(wrap);
+
+  const caption = document.createElement('div');
+  caption.className = 'section-caption';
+  caption.textContent = 'Stunden mit negativem Strompreis (< 0 €/MWh) pro Monat — normiert auf Stunden';
+  card.appendChild(caption);
+
+  return card;
+}
+
+/* ── Section C: Stacked bar chart ────────────────────── */
+function buildStackedBar(monthlyStats) {
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'chart-header';
+  hdr.innerHTML = '<div class="section-title">Preisbuckets pro Monat (Stunden)</div>';
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'toggle-btn';
+  toggleBtn.textContent = 'Normal ausblenden';
+  hdr.appendChild(toggleBtn);
+  card.appendChild(hdr);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'chart-wrap tall';
+  const canvas = document.createElement('canvas');
+  wrap.appendChild(canvas);
+  card.appendChild(wrap);
+
+  const labels = monthlyStats.map(ms => ms.label);
+  const buckets = ['deeply_negative','negative','near_zero_neg','near_zero_pos','normal'];
+
+  let showNormal = false;
+
+  const datasets = buckets.map(bk => ({
+    label: BUCKET_LABELS[bk],
+    data: monthlyStats.map(ms => ms.buckets[bk]),
+    backgroundColor: BUCKET_COLORS[bk],
+    hidden: bk === 'normal' && !showNormal,
+    stack: 'main',
+  }));
+
+  const chart = new Chart(canvas, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 10 }, boxWidth: 12, padding: 8 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} h`
+          }
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: { font: { size: 9 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 30 },
+          grid: { display: false },
+        },
+        y: {
+          stacked: true,
+          ticks: { callback: v => v + ' h', font: { size: 10 } },
+          grid: { color: '#e2e8f0' },
+        },
+      },
+    },
+  });
+
+  toggleBtn.addEventListener('click', () => {
+    showNormal = !showNormal;
+    const ds = chart.data.datasets.find(d => d.label === BUCKET_LABELS['normal']);
+    if (ds) ds.hidden = !showNormal;
+    chart.update();
+    toggleBtn.textContent = showNormal ? 'Normal ausblenden' : 'Normal einblenden';
+    toggleBtn.classList.toggle('active', showNormal);
+  });
+
+  return card;
+}
+
+/* ── Section D: Spread line chart ────────────────────── */
+function buildSpreadChart(monthlyStats, yearlyStats) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  const title = document.createElement('div');
+  title.className = 'section-title';
+  title.textContent = 'Ø Tages\u00adspread pro Monat (\u20ac/MWh)';
+  card.appendChild(title);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'chart-wrap';
+  const canvas = document.createElement('canvas');
+  wrap.appendChild(canvas);
+  card.appendChild(wrap);
+
+  const MONTH_LABELS = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  const years = [...new Set(yearlyStats.map(y => y.year))].sort();
+  const YEAR_COLORS = ['#3b82f6','#f97316','#a855f7','#10b981'];
+
+  const datasets = years.map((yr, i) => {
+    const data = Array(12).fill(null);
+    for (const ms of monthlyStats) {
+      if (ms.year === yr) data[ms.month - 1] = ms.avg_daily_spread;
+    }
+    return {
+      label: String(yr),
+      data,
+      borderColor: YEAR_COLORS[i % YEAR_COLORS.length],
+      backgroundColor: 'transparent',
+      tension: 0.3,
+      pointRadius: 3,
+      spanGaps: true,
+    };
+  });
+
+  new Chart(canvas, {
+    type: 'line',
+    data: { labels: MONTH_LABELS, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 14, padding: 10 } },
+        tooltip: {
+          callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y != null ? ctx.parsed.y.toFixed(1) + ' €/MWh' : '—'}` }
+        },
+      },
+      scales: {
+        x: { ticks: { font: { size: 11 } }, grid: { color: '#e2e8f0' } },
+        y: { ticks: { callback: v => v + ' €', font: { size: 10 } }, grid: { color: '#e2e8f0' } },
+      },
+    },
+  });
+
+  const caption = document.createElement('div');
+  caption.className = 'section-caption';
+  caption.textContent = 'Differenz zwischen Tages-Maximum und Tages-Minimum — zeigt Marktvolatilität';
+  card.appendChild(caption);
+  return card;
+}
+
+/* ── Section E: Data table ────────────────────────────── */
+function buildTable(monthlyStats) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = '<div class="section-title">Monatstabelle</div>';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'table-wrap';
+
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th data-col="label">Monat</th>
+        <th data-col="days_analyzed">Tage</th>
+        <th data-col="negative_hours">Neg. h</th>
+        <th data-col="daylight_negative_pct">Neg. % (Tageslicht)</th>
+        <th data-col="avg_price">Ø Preis</th>
+        <th data-col="avg_daily_spread">Ø Spread</th>
+        <th data-col="max_daily_spread">Max Spread</th>
+      </tr>
+    </thead>
+    <tbody id="history-tbody"></tbody>
+  `;
+
+  let sortCol = 'label';
+  let sortDir = 'asc';
+  let currentData = [...monthlyStats];
+
+  function renderRows() {
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+    let lastYear = null;
+    for (const ms of currentData) {
+      if (ms.year !== lastYear) {
+        lastYear = ms.year;
+        if (sortCol === 'label') {
+          const sepRow = document.createElement('tr');
+          sepRow.className = 'year-sep';
+          sepRow.innerHTML = `<td colspan="7">${ms.year}</td>`;
+          tbody.appendChild(sepRow);
+        }
+      }
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${ms.label}</td>
+        <td class="dim">${ms.days_analyzed}</td>
+        <td class="${ms.negative_hours > 0 ? 'neg' : 'dim'}">${fmtH(ms.negative_hours)}</td>
+        <td class="${ms.daylight_negative_pct > 0 ? 'neg' : 'dim'}">${fmtPct(ms.daylight_negative_pct)}</td>
+        <td>${fmtEUR(ms.avg_price)}</td>
+        <td>${fmtEUR(ms.avg_daily_spread)}</td>
+        <td>${fmtEUR(ms.max_daily_spread)}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  table.querySelectorAll('thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (sortCol === col) {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortCol = col;
+        sortDir = col === 'label' ? 'asc' : 'desc';
+      }
+      table.querySelectorAll('thead th').forEach(t => t.className = '');
+      th.className = sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc';
+
+      currentData.sort((a, b) => {
+        const av = a[col], bv = b[col];
+        if (typeof av === 'string') {
+          return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+        }
+        return sortDir === 'asc' ? av - bv : bv - av;
+      });
+      renderRows();
+    });
+  });
+
+  // Default sort indicator
+  table.querySelector('th[data-col="label"]').className = 'sorted-asc';
+  renderRows();
+
+  wrap.appendChild(table);
+  card.appendChild(wrap);
+  return card;
+}
+
+/* ── Bootstrap ────────────────────────────────────────── */
+async function init() {
+  try {
+    const resp = await fetch('history_view.json?_=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP\u00a0' + resp.status);
+    const lastModified = resp.headers.get('Last-Modified');
+    const data = await resp.json();
+
+    const { monthly_stats: ms, yearly_stats: ys } = data;
+    const main = document.getElementById('main');
+    main.innerHTML = '';
+
+    main.appendChild(buildYearCards(ys));
+    main.appendChild(buildHeatmap(ms, ys));
+    main.appendChild(buildStackedBar(ms));
+    main.appendChild(buildSpreadChart(ms, ys));
+    main.appendChild(buildTable(ms));
+
+    const genAt = new Date(data.generated_at);
+    document.getElementById('footer').textContent =
+      'Zuletzt aktualisiert: ' +
+      genAt.toLocaleString('de-DE', {
+        timeZone: 'Europe/Berlin',
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      });
+
+  } catch (e) {
+    document.getElementById('main').innerHTML = `
+      <div class="card notice error">
+        <strong>Fehler beim Laden der Verlaufsdaten</strong> (${e.message})<br><br>
+        Bitte zuerst <code>python3 -m src.cli update</code> ausführen,
+        dann <code>python3 -m src.cli serve</code> starten und Seite neu laden.
+      </div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
