@@ -26,3 +26,11 @@ location:
   lat: 51.1657  # Center of Germany — adjust to your actual location
   lng: 10.4515
 
+homeassistant:
+  # All values overridable via config.local.yaml (gitignored)
+  url: ""
+  token: ""
+  pv_entity: ""
+  grid_export_entity: ""
+  pv_start_date: ""
+

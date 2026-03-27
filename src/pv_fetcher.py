@@ -13,14 +13,14 @@ from src.utils import load_config, ensure_dir
 class PVFetcher:
     """Fetches and caches PV generation data from HomeAssistant."""
 
-    def __init__(self, config: Optional[Dict] = None):
+    def __init__(self, config: Optional[Dict] = None, entity_id: Optional[str] = None, cache_dir: Optional[str] = None):
         self.config = config or load_config()
         ha = self.config.get('homeassistant', {})
         self.ha_url = ha.get('url', 'http://homeassistant.local:8123').rstrip('/')
         self.ha_token = ha.get('token', '')
-        self.entity_id = ha.get('pv_entity', '')
+        self.entity_id = entity_id or ha.get('pv_entity', '')
         self.pv_start_date = ha.get('pv_start_date', '2025-09-09')
-        self.cache_dir = Path('data/pv')
+        self.cache_dir = Path(cache_dir or 'data/pv')
         ensure_dir(self.cache_dir)
 
     def _ws_statistics(self, start_dt: datetime, end_dt: datetime, period: str = '5minute') -> List[Dict]:
@@ -164,8 +164,8 @@ class PVFetcher:
         while current.date() <= end.date():
             date_str = current.strftime('%Y-%m-%d')
             cache_file = self.cache_dir / f"{date_str}.json"
-            # Skip today and future (incomplete data), unless already cached
-            if current.date() >= today and not cache_file.exists():
+            # Skip future dates (no data yet); today is allowed (partial data is fine)
+            if current.date() > today:
                 current += timedelta(days=1)
                 continue
             if force or not cache_file.exists():

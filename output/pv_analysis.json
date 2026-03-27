@@ -1,0 +1,94 @@
+{
+  "generated": "2026-03-27T23:44:13.006373+01:00",
+  "months": [
+    {
+      "year": 2025,
+      "month": 9,
+      "label": "Sep 2025",
+      "total_kwh": 826.43,
+      "negative_window_kwh": 222.88,
+      "negative_window_pct": 27.0,
+      "days_with_data": 22,
+      "grid_export_kwh": 570.44,
+      "grid_export_negative_kwh": 154.92,
+      "grid_export_negative_pct": 18.7
+    },
+    {
+      "year": 2025,
+      "month": 10,
+      "label": "Oct 2025",
+      "total_kwh": 556.89,
+      "negative_window_kwh": 58.38,
+      "negative_window_pct": 10.5,
+      "days_with_data": 31,
+      "grid_export_kwh": 275.0,
+      "grid_export_negative_kwh": 21.61,
+      "grid_export_negative_pct": 3.9
+    },
+    {
+      "year": 2025,
+      "month": 11,
+      "label": "Nov 2025",
+      "total_kwh": 362.41,
+      "negative_window_kwh": 0.0,
+      "negative_window_pct": 0.0,
+      "days_with_data": 30,
+      "grid_export_kwh": 113.04,
+      "grid_export_negative_kwh": 0.0,
+      "grid_export_negative_pct": 0.0
+    },
+    {
+      "year": 2025,
+      "month": 12,
+      "label": "Dec 2025",
+      "total_kwh": 261.74,
+      "negative_window_kwh": 0.0,
+      "negative_window_pct": 0.0,
+      "days_with_data": 31,
+      "grid_export_kwh": 55.45,
+      "grid_export_negative_kwh": 0.0,
+      "grid_export_negative_pct": 0.0
+    },
+    {
+      "year": 2026,
+      "month": 1,
+      "label": "Jan 2026",
+      "total_kwh": 213.35,
+      "negative_window_kwh": 0.47,
+      "negative_window_pct": 0.2,
+      "days_with_data": 31,
+      "grid_export_kwh": 35.46,
+      "grid_export_negative_kwh": 0.0,
+      "grid_export_negative_pct": 0.0
+    },
+    {
+      "year": 2026,
+      "month": 2,
+      "label": "Feb 2026",
+      "total_kwh": 461.05,
+      "negative_window_kwh": 37.46,
+      "negative_window_pct": 8.1,
+      "days_with_data": 28,
+      "grid_export_kwh": 197.88,
+      "grid_export_negative_kwh": 12.76,
+      "grid_export_negative_pct": 2.8
+    },
+    {
+      "year": 2026,
+      "month": 3,
+      "label": "Mar 2026",
+      "total_kwh": 1158.33,
+      "negative_window_kwh": 181.86,
+      "negative_window_pct": 15.7,
+      "days_with_data": 27,
+      "grid_export_kwh": 721.83,
+      "grid_export_negative_kwh": 37.84,
+      "grid_export_negative_pct": 3.3
+    }
+  ],
+  "total_kwh": 3840.2,
+  "total_negative_window_kwh": 501.05,
+  "total_negative_window_pct": 13.0,
+  "total_grid_export_negative_kwh": 227.13,
+  "total_grid_export_negative_pct": 5.9
+}

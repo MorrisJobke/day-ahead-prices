@@ -195,8 +195,7 @@ def pv_fetch(start_date, end_date, force):
         start_date = config['homeassistant'].get('pv_start_date', '2025-09-09')
     if not end_date:
         from zoneinfo import ZoneInfo
-        yesterday = (datetime.now(ZoneInfo('Europe/Berlin')).date())
-        end_date = yesterday.strftime('%Y-%m-%d')
+        end_date = datetime.now(ZoneInfo('Europe/Berlin')).date().strftime('%Y-%m-%d')
 
     click.echo(f"Fetching PV data from {start_date} to {end_date}...")
     try:
@@ -205,6 +204,16 @@ def pv_fetch(start_date, end_date, force):
     except RuntimeError as e:
         click.echo(f"Error: {e}")
         sys.exit(1)
+
+    grid_entity = config['homeassistant'].get('grid_export_entity', '')
+    if grid_entity:
+        click.echo(f"Fetching grid export data ({grid_entity})...")
+        try:
+            grid_fetcher = PVFetcher(config, entity_id=grid_entity, cache_dir='data/grid')
+            fetched_grid = grid_fetcher.fetch_date_range(start_date, end_date, force=force)
+            click.echo(f"✓ Fetched {len(fetched_grid)} days (grid export)")
+        except RuntimeError as e:
+            click.echo(f"Warning: grid export fetch failed: {e}")
 
 
 @pv.command('generate')
@@ -222,8 +231,12 @@ def pv_generate():
     result = analyzer.analyze_all()
 
     out_file = output_dir / 'pv_analysis.json'
+    ui_result = {
+        **result,
+        'months': [{k: v for k, v in m.items() if k != 'daily'} for m in result['months']],
+    }
     with open(out_file, 'w') as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
+        json.dump(ui_result, f, indent=2, ensure_ascii=False)
     click.echo(f"✓ {out_file}")
 
     src_html = Path('web/pv_history.html')

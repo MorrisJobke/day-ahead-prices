@@ -112,14 +112,15 @@ Access files at `http://localhost:8000`
 
 Correlates your own PV generation data (fetched from HomeAssistant) with negative-price periods to show how many kWh you produced during § 51 EEG windows, broken down by month.
 
-**Setup** — add your HomeAssistant details to `config.yaml`:
+**Setup** — add your HomeAssistant details to `config.local.yaml` (gitignored, never committed):
 
 ```yaml
 homeassistant:
   url: "http://homeassistant.local:8123"
-  token: "<long-lived-access-token>"   # HA → Profile → Security → Create Token
-  pv_entity: "sensor.pv_gesamtenergieertrag"  # cumulative kWh sensor
-  pv_start_date: "2025-09-09"          # first day with PV data
+  token: "<long-lived-access-token>"          # HA → Profile → Security → Create Token
+  pv_entity: "sensor.pv_energy"  # cumulative kWh sensor
+  grid_export_entity: "sensor.exported_to_grid"  # grid feed-in sensor
+  pv_start_date: "2025-05-01"                 # first day with PV data
 ```
 
 **Fetch PV data** (fetches once, then caches in `data/pv/`):
@@ -154,7 +155,7 @@ python -m src.cli calculate 2025-03-01
 
 ## Configuration
 
-Edit `config.yaml` to customize:
+Edit `config.yaml` to customize general settings. **Never put secrets in `config.yaml`** — use `config.local.yaml` instead (see below).
 
 ```yaml
 api:
@@ -170,13 +171,48 @@ dates:
 eeg:
   rule_start_date: "2025-02-25"
   compensation_period_years: 20
+```
 
+### Secrets — config.local.yaml
+
+`config.local.yaml` is gitignored and overrides any value from `config.yaml`. Put all private settings here:
+
+```yaml
 homeassistant:
   url: "http://homeassistant.local:8123"
-  token: ""                               # Long-Lived Access Token
-  pv_entity: "sensor.pv_gesamtenergieertrag"
-  pv_start_date: "2025-09-09"
+  token: "<long-lived-access-token>"
+  pv_entity: "sensor.pv_energy"
+  grid_export_entity: "sensor.exported_to_grid"
+  pv_start_date: "2025-05-01"
 ```
+
+Alternatively, set `HA_TOKEN` as an environment variable — it takes precedence over both files.
+
+## Deployment (GitHub Pages)
+
+The project uses two separate publishing workflows:
+
+### Automatic — daily price data (CI)
+
+A GitHub Actions workflow runs daily, fetches new price data, regenerates the dashboards, and deploys `output/` to the `gh-pages` branch:
+
+- `output/index.html` — today/tomorrow price dashboard
+- `output/history.html` — full price history
+- `output/history_view.json` — data for the history dashboard
+
+### Manual — PV analysis
+
+The raw PV and grid export data (`data/pv/`, `data/grid/`) are private and not committed. Only the aggregated summary is published. Run locally whenever you want to update the PV page:
+
+```bash
+eeg pv fetch                                   # pull latest data from HomeAssistant
+eeg pv generate                                # produce output/pv_analysis.json + output/pv_history.html
+git add output/pv_analysis.json output/pv_history.html
+git commit -m "update pv analysis"
+git push                                       # CI deploys both files to gh-pages
+```
+
+Because the gh-pages deploy uses `keep_files: true`, pushing pv files only updates those two files — the daily price dashboards are not affected, and vice versa.
 
 ## Project Structure
 
@@ -193,14 +229,16 @@ day-ahead-prices/
 │   └── utils.py            # Utilities
 ├── data/
 │   ├── raw/                # Cached price API responses
-│   └── pv/                 # Cached PV generation data (per day)
+│   ├── pv/                 # Cached PV generation data (not committed)
+│   └── grid/               # Cached grid export data (not committed)
 ├── output/                 # Generated files
 ├── web/
 │   ├── index.html          # Daily price dashboard template
 │   ├── history.html        # Price history dashboard
 │   └── pv_history.html     # PV vs. negative-price dashboard
 ├── tests/                  # Unit tests
-├── config.yaml             # Configuration
+├── config.yaml             # Public configuration (no secrets)
+├── config.local.yaml       # Private configuration — gitignored
 └── requirements.txt        # Dependencies
 ```
 

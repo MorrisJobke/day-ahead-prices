@@ -30,9 +30,14 @@ wheels/
 *.swo
 *~
 
+# Secrets
+config.local.yaml
+
 # Project specific
 data/processed/*
 !data/processed/.gitkeep
+data/pv/
+data/grid/
 
 output/daily_view.json
 output/index.html

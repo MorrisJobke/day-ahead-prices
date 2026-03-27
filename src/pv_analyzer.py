@@ -15,6 +15,9 @@ class PVAnalyzer:
         self.config = config or load_config()
         self.price_analyzer = PriceAnalyzer(config)
         self.pv_fetcher = PVFetcher(config)
+        ha = self.config.get('homeassistant', {})
+        grid_entity = ha.get('grid_export_entity', '')
+        self.grid_fetcher = PVFetcher(config, entity_id=grid_entity, cache_dir='data/grid') if grid_entity else None
 
     def _negative_slot_set(self, periods: List[Dict], resolution_hours: float) -> set:
         """Return set of 15-min slot unix_seconds that are inside negative price windows."""
@@ -45,11 +48,16 @@ class PVAnalyzer:
 
         day_result = self.price_analyzer.analyze_day(date)
         if not day_result or not day_result.get('periods'):
-            return {
+            result = {
                 'date': date,
                 'total_wh': total_wh,
                 'negative_window_wh': 0.0,
             }
+            grid_data = self.grid_fetcher.load_cached_data(date) if self.grid_fetcher else None
+            if grid_data:
+                result['grid_export_wh'] = round(grid_data.get('total_wh', 0.0), 2)
+                result['grid_export_negative_wh'] = 0.0
+            return result
 
         resolution_hours = 0.25 if day_result['resolution'] == 'quarter_hourly' else 1.0
         negative_slots = self._negative_slot_set(day_result['periods'], resolution_hours)
@@ -60,11 +68,23 @@ class PVAnalyzer:
             if slot['unix_seconds'] in negative_slots
         )
 
-        return {
+        result = {
             'date': date,
             'total_wh': round(total_wh, 2),
             'negative_window_wh': round(negative_wh, 2),
         }
+
+        grid_data = self.grid_fetcher.load_cached_data(date) if self.grid_fetcher else None
+        if grid_data:
+            grid_export_negative_wh = sum(
+                slot['wh']
+                for slot in grid_data['slots']
+                if slot['unix_seconds'] in negative_slots
+            )
+            result['grid_export_wh'] = round(grid_data.get('total_wh', 0.0), 2)
+            result['grid_export_negative_wh'] = round(grid_export_negative_wh, 2)
+
+        return result
 
     def analyze_month(self, year: int, month: int) -> Dict:
         start = datetime(year, month, 1)
@@ -77,6 +97,9 @@ class PVAnalyzer:
         negative_wh = 0.0
         days_with_data = 0
         daily = []
+        grid_export_wh = 0.0
+        grid_export_negative_wh = 0.0
+        has_grid_data = False
 
         current = start
         while current <= end:
@@ -87,13 +110,17 @@ class PVAnalyzer:
                 negative_wh += result['negative_window_wh']
                 days_with_data += 1
                 daily.append(result)
+                if 'grid_export_wh' in result:
+                    grid_export_wh += result['grid_export_wh']
+                    grid_export_negative_wh += result['grid_export_negative_wh']
+                    has_grid_data = True
             current += timedelta(days=1)
 
         total_kwh = round(total_wh / 1000, 3)
         negative_kwh = round(negative_wh / 1000, 3)
         pct = round(negative_kwh / total_kwh * 100, 1) if total_kwh > 0 else 0.0
 
-        return {
+        month_result = {
             'year': year,
             'month': month,
             'label': datetime(year, month, 1).strftime('%b %Y'),
@@ -103,6 +130,16 @@ class PVAnalyzer:
             'days_with_data': days_with_data,
             'daily': daily,
         }
+
+        if has_grid_data:
+            grid_neg_kwh = round(grid_export_negative_wh / 1000, 3)
+            month_result['grid_export_kwh'] = round(grid_export_wh / 1000, 3)
+            month_result['grid_export_negative_kwh'] = grid_neg_kwh
+            month_result['grid_export_negative_pct'] = (
+                round(grid_neg_kwh / total_kwh * 100, 1) if total_kwh > 0 else 0.0
+            )
+
+        return month_result
 
     def analyze_all(self) -> Dict:
         """Aggregate monthly stats across all dates with both price and PV data."""
@@ -132,10 +169,20 @@ class PVAnalyzer:
         total_neg_kwh = round(sum(m['negative_window_kwh'] for m in months), 3)
         total_pct = round(total_neg_kwh / total_kwh * 100, 1) if total_kwh > 0 else 0.0
 
-        return {
+        result = {
             'generated': datetime.now(ZoneInfo('Europe/Berlin')).isoformat(),
             'months': months,
             'total_kwh': total_kwh,
             'total_negative_window_kwh': total_neg_kwh,
             'total_negative_window_pct': total_pct,
         }
+
+        grid_months = [m for m in months if 'grid_export_negative_kwh' in m]
+        if grid_months:
+            total_grid_neg_kwh = round(sum(m['grid_export_negative_kwh'] for m in grid_months), 3)
+            result['total_grid_export_negative_kwh'] = total_grid_neg_kwh
+            result['total_grid_export_negative_pct'] = (
+                round(total_grid_neg_kwh / total_kwh * 100, 1) if total_kwh > 0 else 0.0
+            )
+
+        return result
