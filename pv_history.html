@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>PV-Erzeugung & Negativpreisfenster</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { background: #0f172a; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(#0f172a 8rem, #f1f5f9 8rem);
+      color: #0f172a;
+      min-height: 100vh;
+      padding-bottom: 2rem;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    header {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 0.875rem 1.25rem;
+      padding-top: calc(0.875rem + env(safe-area-inset-top));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    header h1 { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
+    .back-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: #f8fafc; }
+
+    /* ── Layout ─────────────────────────────────────── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.125rem 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+    }
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.875rem;
+    }
+    .section-caption {
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-top: 0.5rem;
+    }
+
+    /* ── Summary KPI cards ───────────────────────────── */
+    .kpi-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .kpi-card {
+      flex: 1;
+      min-width: 160px;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 1rem 1.125rem;
+    }
+    .kpi-card.green  { border-left: 4px solid #22c55e; }
+    .kpi-card.orange { border-left: 4px solid #f97316; }
+    .kpi-card.blue   { border-left: 4px solid #3b82f6; }
+    .kpi-card.red    { border-left: 4px solid #dc2626; }
+    .kpi-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 0.3rem; }
+    .kpi-value { font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1.1; }
+    .kpi-sub   { font-size: 0.72rem; color: #64748b; margin-top: 0.25rem; }
+
+    /* ── Chart wrap ──────────────────────────────────── */
+    .chart-wrap { position: relative; height: 300px; }
+
+    /* ── Table ───────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    thead th {
+      text-align: left;
+      padding: 0.45rem 0.625rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    td { padding: 0.4rem 0.625rem; white-space: nowrap; color: #374151; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.neg { color: #f97316; font-weight: 600; }
+    td.pct-bar { min-width: 120px; }
+
+    .bar-bg {
+      height: 10px;
+      border-radius: 5px;
+      background: #e2e8f0;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+      vertical-align: middle;
+    }
+    .bar-fill {
+      display: block;
+      height: 100%;
+      border-radius: 5px;
+      background: #f97316;
+      transition: width 0.4s;
+    }
+
+    /* ── Footer ──────────────────────────────────────── */
+    footer { text-align: center; color: #94a3b8; font-size: 0.72rem; margin-top: 0.25rem; }
+
+    /* ── Loading / error ─────────────────────────────── */
+    .notice { color: #64748b; font-size: 0.875rem; }
+    .error  { color: #dc2626; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>&#9728; PV-Erzeugung &amp; Negativpreisfenster</h1>
+  <a class="back-link" href="index.html">← Tagesansicht</a>
+</header>
+
+<main id="main">
+  <div class="card notice">Lade Daten…</div>
+</main>
+<footer id="footer"></footer>
+
+<script>
+'use strict';
+
+function fmtKwh(v) {
+  if (v == null) return '—';
+  return v.toFixed(1) + '\u00a0kWh';
+}
+function fmtPct(v) {
+  if (v == null) return '—';
+  return v.toFixed(1) + '\u00a0%';
+}
+
+async function load() {
+  const main = document.getElementById('main');
+  const footer = document.getElementById('footer');
+  let data;
+
+  try {
+    const resp = await fetch('pv_analysis.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    data = await resp.json();
+  } catch (e) {
+    main.innerHTML = `<div class="card error">Fehler beim Laden von pv_analysis.json: ${e.message}<br>
+      Bitte zuerst <code>eeg pv fetch</code> und <code>eeg pv generate</code> ausführen.</div>`;
+    return;
+  }
+
+  const months = data.months || [];
+  if (!months.length) {
+    main.innerHTML = `<div class="card notice">Keine Daten verfügbar. Bitte zuerst <code>eeg pv fetch</code> ausführen.</div>`;
+    return;
+  }
+
+  main.innerHTML = '';
+
+  // ── KPI Summary ───────────────────────────────────
+  const totalKwh       = data.total_kwh ?? 0;
+  const totalNegKwh    = data.total_negative_window_kwh ?? 0;
+  const totalPct       = data.total_negative_window_pct ?? 0;
+  const normalKwh      = Math.max(0, totalKwh - totalNegKwh);
+  const totalGridNegKwh = data.total_grid_export_negative_kwh ?? null;
+  const totalGridNegPct = data.total_grid_export_negative_pct ?? null;
+  const hasGridData    = totalGridNegKwh !== null;
+
+  const kpiCard = document.createElement('div');
+  kpiCard.className = 'card';
+  kpiCard.innerHTML = `
+    <div class="section-title">Gesamtübersicht</div>
+    <div class="kpi-row">
+      <div class="kpi-card green">
+        <div class="kpi-label">Gesamterzeugung</div>
+        <div class="kpi-value">${fmtKwh(totalKwh)}</div>
+        <div class="kpi-sub">seit ${months[0].label}</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">Davon im Negativfenster</div>
+        <div class="kpi-value">${fmtKwh(totalNegKwh)}</div>
+        <div class="kpi-sub">${fmtPct(totalPct)} der Gesamterzeugung</div>
+      </div>
+      ${hasGridData ? `
+      <div class="kpi-card red">
+        <div class="kpi-label">Einspeisung ohne Vergütung</div>
+        <div class="kpi-value">${fmtKwh(totalGridNegKwh)}</div>
+        <div class="kpi-sub">${fmtPct(totalGridNegPct)} der Gesamterzeugung</div>
+      </div>` : `
+      <div class="kpi-card blue">
+        <div class="kpi-label">Unbeeinträchtigt</div>
+        <div class="kpi-value">${fmtKwh(normalKwh)}</div>
+        <div class="kpi-sub">${fmtPct(100 - totalPct)} der Gesamterzeugung</div>
+      </div>`}
+    </div>
+  `;
+  main.appendChild(kpiCard);
+
+  // ── Chart: gestapeltes Balkendiagramm ────────────
+  const chartCard = document.createElement('div');
+  chartCard.className = 'card';
+  const chartHeader = document.createElement('div');
+  chartHeader.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:0.875rem;flex-wrap:wrap;gap:0.5rem;';
+  chartHeader.innerHTML = '<div class="section-title" style="margin-bottom:0">Monatliche Erzeugung</div>';
+  chartCard.appendChild(chartHeader);
+  const chartWrap = document.createElement('div');
+  chartWrap.className = 'chart-wrap';
+  const canvas = document.createElement('canvas');
+  canvas.id = 'pvChart';
+  chartWrap.appendChild(canvas);
+  chartCard.appendChild(chartWrap);
+  const caption = document.createElement('div');
+  caption.className = 'section-caption';
+  caption.textContent = hasGridData
+    ? 'Grün = Erzeugung außerhalb Negativpreisfenster · Orange = Eigenverbrauch im Negativfenster · Rot = Einspeisung ohne Vergütung (§ 51 EEG)'
+    : 'Grün = Erzeugung außerhalb Negativpreisfenster · Orange = Erzeugung während negativer Preise (§ 51 EEG)';
+  chartCard.appendChild(caption);
+  main.appendChild(chartCard);
+
+  const labels   = months.map(m => m.label);
+  const normData = months.map(m => Math.max(0, m.total_kwh - m.negative_window_kwh));
+
+  const datasets = [
+    {
+      label: 'Normal',
+      data: normData,
+      backgroundColor: 'rgba(34,197,94,0.75)',
+      borderColor: 'rgba(34,197,94,1)',
+      borderWidth: 1,
+      borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 4, bottomRight: 4 },
+      borderSkipped: 'bottom',
+      stack: 'pv',
+    },
+  ];
+
+  if (hasGridData) {
+    // Split orange bar: self-consumed during negative window (orange) + fed without compensation (red)
+    datasets.push({
+      label: 'Negativfenster (Eigenverbrauch)',
+      data: months.map(m => Math.max(0, (m.negative_window_kwh ?? 0) - (m.grid_export_negative_kwh ?? 0))),
+      backgroundColor: 'rgba(249,115,22,0.8)',
+      borderColor: 'rgba(249,115,22,1)',
+      borderWidth: 1,
+      borderSkipped: 'bottom',
+      stack: 'pv',
+    });
+    datasets.push({
+      label: 'Einsp. ohne Vergütung (§ 51)',
+      data: months.map(m => m.grid_export_negative_kwh ?? 0),
+      backgroundColor: 'rgba(220,38,38,0.85)',
+      borderColor: 'rgba(220,38,38,1)',
+      borderWidth: 1,
+      borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+      borderSkipped: 'bottom',
+      stack: 'pv',
+    });
+  } else {
+    datasets.push({
+      label: 'Negativfenster',
+      data: months.map(m => m.negative_window_kwh),
+      backgroundColor: 'rgba(249,115,22,0.8)',
+      borderColor: 'rgba(249,115,22,1)',
+      borderWidth: 1,
+      borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+      borderSkipped: 'bottom',
+      stack: 'pv',
+    });
+  }
+
+  new Chart(canvas, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 11 }, padding: 12 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} kWh`,
+            footer: items => {
+              const total = items.reduce((s, i) => s + i.parsed.y, 0);
+              const negItems = items.filter(i => i.dataset.label !== 'Normal');
+              const negTotal = negItems.reduce((s, i) => s + i.parsed.y, 0);
+              const pct = total > 0 ? (negTotal / total * 100).toFixed(1) : '0.0';
+              return `Gesamt: ${total.toFixed(1)} kWh  (${pct} % im Neg.-Fenster)`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          ticks: { font: { size: 11 }, callback: v => v + ' kWh' },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+        },
+      },
+    },
+  });
+
+  // ── Tabelle ───────────────────────────────────────
+  const tableCard = document.createElement('div');
+  tableCard.className = 'card';
+  tableCard.innerHTML = '<div class="section-title">Monatstabelle</div>';
+  const tableWrap = document.createElement('div');
+  tableWrap.className = 'table-wrap';
+
+  const colCount = hasGridData ? 7 : 6;
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Monat</th>
+        <th style="text-align:right">Erzeugung gesamt</th>
+        <th style="text-align:right">Im Negativfenster</th>
+        <th style="text-align:right">Anteil</th>
+        <th>Balken</th>
+        ${hasGridData ? '<th style="text-align:right">Einsp. ohne Vergütung</th><th style="text-align:right">Anteil</th>' : '<th style="text-align:right">Tage mit Daten</th>'}
+      </tr>
+    </thead>
+  `;
+  const tbody = document.createElement('tbody');
+
+  let prevYear = null;
+  for (const m of months) {
+    if (prevYear !== null && m.year !== prevYear) {
+      const sep = document.createElement('tr');
+      sep.className = 'year-sep';
+      sep.innerHTML = `<td colspan="${colCount}" style="padding:0.2rem 0.625rem;font-size:0.72rem;color:#64748b;">— ${m.year} —</td>`;
+      tbody.appendChild(sep);
+    }
+    prevYear = m.year;
+
+    const pct = m.negative_window_pct ?? 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${m.label}</td>
+      <td class="num">${fmtKwh(m.total_kwh)}</td>
+      <td class="num neg">${fmtKwh(m.negative_window_kwh)}</td>
+      <td class="num neg">${fmtPct(pct)}</td>
+      <td class="pct-bar">
+        <span class="bar-bg"><span class="bar-fill" style="width:${Math.min(100,pct).toFixed(1)}%"></span></span>
+      </td>
+      ${hasGridData
+        ? `<td class="num" style="color:#dc2626;font-weight:600">${fmtKwh(m.grid_export_negative_kwh ?? null)}</td>
+           <td class="num" style="color:#dc2626;font-weight:600">${fmtPct(m.grid_export_negative_pct ?? null)}</td>`
+        : `<td class="num" style="color:#64748b">${m.days_with_data}</td>`}
+    `;
+    tbody.appendChild(tr);
+  }
+
+  table.appendChild(tbody);
+  tableWrap.appendChild(table);
+  tableCard.appendChild(tableWrap);
+  main.appendChild(tableCard);
+
+  // ── Footer ────────────────────────────────────────
+  if (data.generated) {
+    const ts = new Date(data.generated).toLocaleString('de-DE', { timeZone: 'Europe/Berlin', dateStyle: 'short', timeStyle: 'short' });
+    footer.textContent = `Zuletzt aktualisiert: ${ts}`;
+  }
+}
+
+load();
+</script>
+</body>
+</html>
