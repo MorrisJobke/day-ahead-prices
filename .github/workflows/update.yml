@@ -30,7 +30,6 @@ jobs:
           else
             TARGET=$(TZ='Europe/Berlin' date +%Y-%m-%d)
           fi
-          echo "target=${TARGET}" >> $GITHUB_OUTPUT
           if [ -f "data/raw/${TARGET}.json" ]; then
             echo "Data for ${TARGET} already present – skipping"
             echo "skip=true" >> $GITHUB_OUTPUT
