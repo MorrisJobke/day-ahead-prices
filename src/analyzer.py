@@ -91,9 +91,9 @@ class PriceAnalyzer:
             end_timestamp = group['timestamp'].iloc[-1]
             if resolution_hours == 0.25:
                 minute = (end_timestamp.minute // 15) * 15 + 14
-                end_time = end_timestamp.replace(minute=minute, second=59, microsecond=0)
+                end_time = end_timestamp.replace(minute=minute, second=59, microsecond=0) + timedelta(seconds=1)
             else:
-                end_time = end_timestamp.replace(minute=59, second=59, microsecond=0)
+                end_time = end_timestamp.replace(minute=59, second=59, microsecond=0) + timedelta(seconds=1)
 
             negative_periods.append({
                 'start': group['timestamp'].iloc[0].isoformat(),
