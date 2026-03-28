@@ -26,6 +26,11 @@ location:
   lat: 51.1657  # Center of Germany — adjust to your actual location
   lng: 10.4515
 
+telegram:
+  # Credentials go in config.local.yaml (gitignored)
+  bot_token: ""
+  chat_id: ""
+
 homeassistant:
   # All values overridable via config.local.yaml (gitignored)
   url: ""

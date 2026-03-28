@@ -186,7 +186,15 @@ homeassistant:
   pv_start_date: "2025-05-01"
 ```
 
-Alternatively, set `HA_TOKEN` as an environment variable — it takes precedence over both files.
+Alternatively, set environment variables — they take precedence over both files:
+
+| Variable | Description |
+|---|---|
+| `HA_TOKEN` | HomeAssistant long-lived access token |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot token |
+| `TELEGRAM_CHAT_ID` | Telegram chat ID to send notifications to |
+
+This is the recommended approach for CI/CD environments like GitHub Actions — add the values as repository secrets and pass them via `env:` in the workflow step.
 
 ## Deployment (GitHub Pages)
 

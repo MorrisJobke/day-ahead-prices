@@ -96,13 +96,17 @@ def generate():
 
 @cli.command()
 def update():
-    """Fetch latest data and regenerate outputs."""
+    """Fetch latest data, regenerate outputs, and notify if new prices were found."""
+    from src.notifier import check_and_notify
+
     config = load_config()
     fetcher = DataFetcher()
 
     # Fetch latest data (including tomorrow's prices if after 2 PM)
     start_date = config['dates']['start_date']
     end_date = get_fetch_end_date().strftime("%Y-%m-%d")
+
+    cached_before = set(fetcher.get_cached_dates())
 
     click.echo("Updating data...")
     fetched = fetcher.fetch_date_range(start_date, end_date)
@@ -114,6 +118,15 @@ def update():
     generator.generate_all()
 
     click.echo("✓ Update complete")
+
+    # Notify for newly fetched dates
+    new_dates = [d for d in fetched if d not in cached_before]
+    for date in new_dates:
+        outcome = check_and_notify(date, config)
+        if outcome['sent']:
+            click.echo(f"✓ Telegram-Benachrichtigung gesendet für {date}")
+        elif outcome.get('error'):
+            click.echo(f"  Telegram: {outcome['error']}")
 
 
 @cli.command()
@@ -169,6 +182,49 @@ def calculate(installation_date, start_date, end_date):
     click.echo(f"  Original end date: {ext['original_end_date']}")
     click.echo(f"  Extended end date: {ext['extended_end_date']}")
     click.echo(f"  Extension: {ext['extension_days']} days")
+
+
+@cli.command()
+@click.option('--date', default=None, help='Date to check (YYYY-MM-DD). Default: tomorrow.')
+@click.option('--dry-run', is_flag=True, help='Show message without sending.')
+def notify(date, dry_run):
+    """Check tomorrow's prices and send Telegram alert if negative daylight prices exist."""
+    from datetime import timedelta
+    from zoneinfo import ZoneInfo
+    from src.data_fetcher import DataFetcher
+    from src.notifier import check_and_notify, format_message
+    from src.analyzer import PriceAnalyzer
+
+    config = load_config()
+
+    if not date:
+        tz = ZoneInfo('Europe/Berlin')
+        date = (datetime.now(tz) + timedelta(days=1)).strftime('%Y-%m-%d')
+
+    # Ensure data is fetched for that date
+    DataFetcher(config).fetch_date_range(date, date)
+
+    if dry_run:
+        lat = config['location']['lat']
+        lng = config['location']['lng']
+        result = PriceAnalyzer(config).analyze_day(date)
+        if not result:
+            click.echo(f"Keine Daten für {date}")
+            return
+        msg = format_message(date, result['periods'], lat, lng)
+        click.echo(msg if msg else f"Keine negativen Preise tagsüber am {date}.")
+        return
+
+    outcome = check_and_notify(date, config)
+    if outcome.get('error'):
+        click.echo(f"Fehler: {outcome['error']}")
+        return
+    if outcome['sent']:
+        click.echo(f"✓ Telegram-Nachricht gesendet für {date}")
+        click.echo("")
+        click.echo(outcome['message'])
+    else:
+        click.echo(f"Keine negativen Tagpreise am {date} — keine Nachricht gesendet.")
 
 
 @cli.group()
