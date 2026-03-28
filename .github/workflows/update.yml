@@ -48,6 +48,9 @@ jobs:
 
       - run: python3 -m src.cli update
         if: steps.check.outputs.skip != 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: Commit data and output to main
         if: steps.check.outputs.skip != 'true'
