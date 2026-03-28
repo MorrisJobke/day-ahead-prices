@@ -42,19 +42,22 @@
       letter-spacing: -0.01em;
     }
     .tabs { display: flex; gap: 0.5rem; }
-    .tab-btn {
-      padding: 0.35rem 1rem;
+    .tab-btn, .nav-btn {
+      padding: 0.35rem 0.875rem;
       border-radius: 6px;
       border: none;
       cursor: pointer;
       font-size: 0.8rem;
       font-weight: 600;
       font-family: inherit;
+      text-decoration: none;
       transition: background 0.15s, color 0.15s;
     }
-    .tab-btn.active   { background: #3b82f6; color: #fff; }
-    .tab-btn.inactive { background: #1e293b; color: #94a3b8; }
+    .tab-btn.active,  .nav-btn.active   { background: #3b82f6; color: #fff; }
+    .tab-btn.inactive,.nav-btn.inactive { background: #1e293b; color: #94a3b8; }
     .tab-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .nav-btn:hover:not(.active) { background: #2d3f55; color: #f8fafc; }
+    .page-nav { display: flex; gap: 0.4rem; }
 
     /* ── Layout ─────────────────────────────────────── */
     main {
@@ -190,7 +193,11 @@
       <button id="tab-today"     class="tab-btn active"   onclick="showDay('today')">Heute</button>
       <button id="tab-tomorrow"  class="tab-btn inactive" onclick="showDay('tomorrow')">Morgen</button>
     </div>
-    <a href="history.html" style="color:#94a3b8;text-decoration:none;font-size:0.8rem;font-weight:600;white-space:nowrap;">📊 Verlauf →</a>
+    <nav class="page-nav">
+      <a href="index.html"       class="nav-btn active">Preise</a>
+      <a href="history.html"     class="nav-btn inactive">Verlauf</a>
+      <a href="pv_history.html"  class="nav-btn inactive">☀ PV</a>
+    </nav>
   </div>
 </header>
 
@@ -528,7 +535,26 @@ async function init() {
     const resp = await fetch('daily_view.json?_=' + Date.now());
     if (!resp.ok) throw new Error('HTTP\u00a0' + resp.status);
     const lastModified = resp.headers.get('Last-Modified');
-    appData = await resp.json();
+    const rawData = await resp.json();
+
+    // Re-map yesterday/today/tomorrow based on actual date vs. current Berlin date.
+    // The JSON keys are set at generation time, so they may be stale if the file
+    // hasn't been regenerated since yesterday.
+    // sv-SE-Locale gibt nativ YYYY-MM-DD zurück — kürzester Weg zu einem
+    // ISO-Datumsstring in der richtigen Zeitzone ohne manuelles Zusammenbauen.
+    const todayStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' }).format(new Date());
+    const yesterdayStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' })
+      .format(new Date(Date.now() - 86400000));
+    const tomorrowStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' })
+      .format(new Date(Date.now() + 86400000));
+
+    const allDays = [rawData.yesterday, rawData.today, rawData.tomorrow].filter(Boolean);
+    appData = { location: rawData.location, yesterday: null, today: null, tomorrow: null };
+    for (const day of allDays) {
+      if (day.date === todayStr)     appData.today     = day;
+      else if (day.date === yesterdayStr) appData.yesterday = day;
+      else if (day.date === tomorrowStr)  appData.tomorrow  = day;
+    }
 
     // Disable "Gestern" tab if data isn't in cache
     const yesterdayBtn = document.getElementById('tab-yesterday');
