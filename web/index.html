@@ -535,7 +535,26 @@ async function init() {
     const resp = await fetch('daily_view.json?_=' + Date.now());
     if (!resp.ok) throw new Error('HTTP\u00a0' + resp.status);
     const lastModified = resp.headers.get('Last-Modified');
-    appData = await resp.json();
+    const rawData = await resp.json();
+
+    // Re-map yesterday/today/tomorrow based on actual date vs. current Berlin date.
+    // The JSON keys are set at generation time, so they may be stale if the file
+    // hasn't been regenerated since yesterday.
+    // sv-SE-Locale gibt nativ YYYY-MM-DD zurück — kürzester Weg zu einem
+    // ISO-Datumsstring in der richtigen Zeitzone ohne manuelles Zusammenbauen.
+    const todayStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' }).format(new Date());
+    const yesterdayStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' })
+      .format(new Date(Date.now() - 86400000));
+    const tomorrowStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' })
+      .format(new Date(Date.now() + 86400000));
+
+    const allDays = [rawData.yesterday, rawData.today, rawData.tomorrow].filter(Boolean);
+    appData = { location: rawData.location, yesterday: null, today: null, tomorrow: null };
+    for (const day of allDays) {
+      if (day.date === todayStr)     appData.today     = day;
+      else if (day.date === yesterdayStr) appData.yesterday = day;
+      else if (day.date === tomorrowStr)  appData.tomorrow  = day;
+    }
 
     // Disable "Gestern" tab if data isn't in cache
     const yesterdayBtn = document.getElementById('tab-yesterday');
