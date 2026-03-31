@@ -1,8 +1,8 @@
 {
   "data_period": {
     "start": "2020-01-01",
-    "end": "2026-03-31",
-    "total_days": 2282
+    "end": "2026-04-01",
+    "total_days": 2283
   },
   "total_negative_units": 2160,
   "total_negative_hours": 1881.75,
@@ -14,9 +14,10 @@
     "monthly_negative_hours": {
       "1": 2.5,
       "2": 5.75,
-      "3": 34.75
+      "3": 34.75,
+      "4": 0.0
     },
-    "months": 3
+    "months": 4
   },
   "eeg_rule_info": {
     "rule_start_date": "2025-02-25",
