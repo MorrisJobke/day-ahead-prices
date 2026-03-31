@@ -38,32 +38,20 @@ def format_message(date: str, periods: List[Dict], lat: float, lng: float) -> Op
     if not daytime_periods:
         return None
 
-    sunrise_dt = datetime.fromtimestamp(sunrise_ts, tz=TZ_BERLIN)
-    sunset_dt = datetime.fromtimestamp(sunset_ts, tz=TZ_BERLIN)
-
     date_dt = datetime.strptime(date, '%Y-%m-%d')
     date_formatted = date_dt.strftime('%d.%m.%Y')
     weekday = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'][date_dt.weekday()]
 
-    total_hours = sum(p['duration_hours'] for p in daytime_periods)
-
     lines = [
         f"⚡ Negative Strompreise morgen ({weekday}, {date_formatted})",
         "",
-        f"Tageszeitraum: {sunrise_dt.strftime('%H:%M')}–{sunset_dt.strftime('%H:%M')} Uhr",
-        "",
-        "Negative Preiszeiträume tagsüber:",
     ]
 
     for p in daytime_periods:
         start_dt = datetime.fromisoformat(p['start']).astimezone(TZ_BERLIN)
         end_dt = datetime.fromisoformat(p['end']).astimezone(TZ_BERLIN)
         hours = p['duration_hours']
-        min_price = p['min_price']
-        lines.append(f"  • {start_dt.strftime('%H:%M')}–{end_dt.strftime('%H:%M')} Uhr ({hours:.2g}h, min. {min_price:.0f} €/MWh)")
-
-    lines.append("")
-    lines.append(f"Gesamt: {total_hours:.2g}h negativer Preis tagsüber")
+        lines.append(f"  • <b>{start_dt.strftime('%H:%M')}–{end_dt.strftime('%H:%M')} Uhr</b> ({hours:.2g}h)")
 
     return "\n".join(lines)
 
@@ -71,7 +59,7 @@ def format_message(date: str, periods: List[Dict], lat: float, lng: float) -> Op
 def send_telegram_message(token: str, chat_id: str, text: str) -> bool:
     """Send a message via the Telegram Bot API. Returns True on success."""
     url = f"https://api.telegram.org/bot{token}/sendMessage"
-    resp = requests.post(url, json={"chat_id": chat_id, "text": text}, timeout=10)
+    resp = requests.post(url, json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"}, timeout=10)
     resp.raise_for_status()
     return resp.json().get('ok', False)
 
