@@ -306,6 +306,28 @@ def pv_generate():
     pct = result.get('total_negative_window_pct', 0)
     click.echo(f"\nGesamt: {total} kWh  |  Im Negativfenster: {neg} kWh ({pct} %)")
 
+    # Print per-day negative windows with PV/grid breakdown
+    days_with_windows = [
+        day
+        for month in result.get('months', [])
+        for day in month.get('daily', [])
+        if day.get('windows')
+    ]
+    if days_with_windows:
+        has_grid = any('grid_export_wh' in w for day in days_with_windows for w in day['windows'])
+        click.echo("\nNegative Preisfenster mit PV-Einspeisung:")
+        for day in days_with_windows:
+            click.echo(f"  {day['date']}:")
+            for w in day['windows']:
+                start = w['start'][11:16]
+                end = w['end'][11:16]
+                pv_kwh = round(w['pv_wh'] / 1000, 3)
+                line = f"    {start}–{end}  PV: {pv_kwh} kWh"
+                if has_grid and 'grid_export_wh' in w:
+                    grid_kwh = round(w['grid_export_wh'] / 1000, 3)
+                    line += f"  Export: {grid_kwh} kWh"
+                click.echo(line)
+
 
 if __name__ == '__main__':
     cli()

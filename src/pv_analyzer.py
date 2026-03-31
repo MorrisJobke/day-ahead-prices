@@ -19,6 +19,17 @@ class PVAnalyzer:
         grid_entity = ha.get('grid_export_entity', '')
         self.grid_fetcher = PVFetcher(config, entity_id=grid_entity, cache_dir='data/grid') if grid_entity else None
 
+    @staticmethod
+    def _find_meter_reading(sum_readings: List[Dict], ts: int) -> Optional[float]:
+        """Return the last meter reading (kWh) at or before ts, or None."""
+        result = None
+        for r in sum_readings:
+            if r['unix_seconds'] <= ts:
+                result = r['sum_kwh']
+            else:
+                break
+        return result
+
     def _negative_slot_set(self, periods: List[Dict], resolution_hours: float) -> set:
         """Return set of 15-min slot unix_seconds that are inside negative price windows."""
         slot_duration = int(resolution_hours * 3600)  # 900 or 3600
@@ -60,27 +71,60 @@ class PVAnalyzer:
             return result
 
         resolution_hours = 0.25 if day_result['resolution'] == 'quarter_hourly' else 1.0
-        negative_slots = self._negative_slot_set(day_result['periods'], resolution_hours)
+        grid_data = self.grid_fetcher.load_cached_data(date) if self.grid_fetcher else None
 
-        negative_wh = sum(
-            slot['wh']
-            for slot in pv_data['slots']
-            if slot['unix_seconds'] in negative_slots
-        )
+        pv_sum_readings = pv_data.get('sum_readings', [])
+        grid_sum_readings = grid_data.get('sum_readings', []) if grid_data else []
+
+        windows = []
+        for period in day_result['periods']:
+            period_slots = self._negative_slot_set([period], resolution_hours)
+            start_ts = int(datetime.fromisoformat(period['start']).timestamp())
+            end_ts = int(datetime.fromisoformat(period['end']).timestamp())
+
+            m0 = self._find_meter_reading(pv_sum_readings, start_ts) if pv_sum_readings else None
+            m1 = self._find_meter_reading(pv_sum_readings, end_ts) if pv_sum_readings else None
+
+            if m0 is not None and m1 is not None:
+                period_pv_wh = max(0.0, (m1 - m0) * 1000)
+            else:
+                period_pv_wh = sum(
+                    slot['wh'] for slot in pv_data['slots'] if slot['unix_seconds'] in period_slots
+                )
+
+            window = {
+                'start': period['start'],
+                'end': period['end'],
+                'pv_wh': round(period_pv_wh, 2),
+            }
+            if m0 is not None and m1 is not None:
+                window['meter_start_kwh'] = m0
+                window['meter_end_kwh'] = m1
+            if grid_data:
+                gm0 = self._find_meter_reading(grid_sum_readings, start_ts) if grid_sum_readings else None
+                gm1 = self._find_meter_reading(grid_sum_readings, end_ts) if grid_sum_readings else None
+                if gm0 is not None and gm1 is not None:
+                    period_grid_wh = max(0.0, (gm1 - gm0) * 1000)
+                    window['grid_meter_start_kwh'] = gm0
+                    window['grid_meter_end_kwh'] = gm1
+                else:
+                    period_grid_wh = sum(
+                        slot['wh'] for slot in grid_data['slots'] if slot['unix_seconds'] in period_slots
+                    )
+                window['grid_export_wh'] = round(period_grid_wh, 2)
+            windows.append(window)
+
+        negative_wh = sum(w['pv_wh'] for w in windows)
 
         result = {
             'date': date,
             'total_wh': round(total_wh, 2),
             'negative_window_wh': round(negative_wh, 2),
+            'windows': windows,
         }
 
-        grid_data = self.grid_fetcher.load_cached_data(date) if self.grid_fetcher else None
         if grid_data:
-            grid_export_negative_wh = sum(
-                slot['wh']
-                for slot in grid_data['slots']
-                if slot['unix_seconds'] in negative_slots
-            )
+            grid_export_negative_wh = sum(w.get('grid_export_wh', 0.0) for w in windows)
             result['grid_export_wh'] = round(grid_data.get('total_wh', 0.0), 2)
             result['grid_export_negative_wh'] = round(grid_export_negative_wh, 2)
 

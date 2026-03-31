@@ -94,6 +94,7 @@ class PVFetcher:
         day_start_ts = day_start.timestamp()
         day_end_ts = day_end.timestamp()
         slots: Dict[int, float] = {}
+        sum_readings: List[Dict] = []
         prev_sum = None
 
         for entry in stats:
@@ -101,6 +102,10 @@ class PVFetcher:
             if cur_sum is None:
                 prev_sum = None
                 continue
+            # Store cumulative sum as meter reading reference.
+            # Note: 'sum' is relative to when HA started recording statistics,
+            # not the absolute reading since installation. Deltas are correct.
+            sum_readings.append({'unix_seconds': int(entry['start']), 'sum_kwh': round(cur_sum, 3)})
             if prev_sum is not None:
                 delta_wh = max(0.0, cur_sum - prev_sum) * 1000.0
                 entry_ts = entry['start']
@@ -129,6 +134,7 @@ class PVFetcher:
             'entity_id': self.entity_id,
             'slots': slot_list,
             'total_wh': total_wh,
+            'sum_readings': sum_readings,
         }
 
     def fetch_day(self, date: str, force: bool = False) -> Optional[Dict]:
