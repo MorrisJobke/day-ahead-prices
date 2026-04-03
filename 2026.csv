@@ -92,3 +92,4 @@ Date,Resolution,Total Units,Negative Units,Negative Hours,Negative %,Min Price,M
 2026-04-01,quarter_hourly,96,0,0,0.0,80.4,239.12,144.21,0
 2026-04-02,quarter_hourly,96,0,0,0.0,34.71,196.93,114.04,0
 2026-04-03,quarter_hourly,96,0,0,0.0,0.0,156.58,84.64,0
+2026-04-04,quarter_hourly,96,16,4.0,16.67,-0.62,174.95,33.07,1
