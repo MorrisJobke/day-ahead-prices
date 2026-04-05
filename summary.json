@@ -4,9 +4,9 @@
     "end": "2026-04-05",
     "total_days": 2287
   },
-  "total_negative_units": 2176,
-  "total_negative_hours": 1885.75,
-  "total_periods": 386,
+  "total_negative_units": 2245,
+  "total_negative_hours": 1903.0,
+  "total_periods": 388,
   "current_year": {
     "year": 2026,
     "negative_units": 257,
