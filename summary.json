@@ -1,21 +1,21 @@
 {
   "data_period": {
     "start": "2020-01-01",
-    "end": "2026-04-08",
-    "total_days": 2290
+    "end": "2026-04-09",
+    "total_days": 2291
   },
   "total_negative_units": 2326,
   "total_negative_hours": 1923.25,
   "total_periods": 392,
   "current_year": {
     "year": 2026,
-    "negative_units": 338,
-    "negative_hours": 84.5,
+    "negative_units": 356,
+    "negative_hours": 89.0,
     "monthly_negative_hours": {
       "1": 2.5,
       "2": 5.75,
       "3": 34.75,
-      "4": 41.5
+      "4": 46.0
     },
     "months": 4
   },
