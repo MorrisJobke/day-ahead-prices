@@ -1,10 +1,10 @@
 {
   "year": 2026,
   "month": 4,
-  "days_analyzed": 20,
-  "total_units": 1920,
-  "negative_units": 239,
-  "negative_hours": 59.75,
+  "days_analyzed": 21,
+  "total_units": 2016,
+  "negative_units": 254,
+  "negative_hours": 63.5,
   "daily_breakdown": [
     {
       "date": "2026-04-01",
@@ -362,6 +362,28 @@
       "min_price": 19.94,
       "max_price": 163.93,
       "avg_price": 97.70760416666667
+    },
+    {
+      "date": "2026-04-21",
+      "resolution": "quarter_hourly",
+      "total_units": 96,
+      "negative_units": 15,
+      "negative_hours": 3.75,
+      "negative_percentage": 15.625,
+      "periods": [
+        {
+          "start": "2026-04-21T12:30:00+02:00",
+          "end": "2026-04-21T16:15:00+02:00",
+          "duration_units": 15,
+          "duration_hours": 3.75,
+          "min_price": -5.11,
+          "max_price": -0.04,
+          "avg_price": -1.9819999999999995
+        }
+      ],
+      "min_price": -5.11,
+      "max_price": 154.33,
+      "avg_price": 82.57125
     }
   ]
 }
