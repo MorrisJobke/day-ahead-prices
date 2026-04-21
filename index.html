@@ -221,14 +221,15 @@ let chart     = null;
 const EEG_PRICE_THRESHOLD = 77.80;  // EUR/MWh
 
 function priceColor(eur) {
-  if (eur < 0)                    return '#ef4444';  // red      – negative
-  if (eur < EEG_PRICE_THRESHOLD)  return '#4ade80';  // green    – below threshold
-  if (eur < 100)                  return '#bfdbfe';  // blue-200 – just above threshold
+  if (eur < 0)                    return '#ef4444';  // red-500    – negative: no compensation
+  if (eur === 0)                  return '#eab308';  // yellow-500 – zero: subsidy only
+  if (eur < EEG_PRICE_THRESHOLD)  return '#fb923c';  // orange-400 – subsidised
+  if (eur < 100)                  return '#bfdbfe';  // blue-200   – just above threshold
   if (eur < 125)                  return '#93c5fd';  // blue-300
   if (eur < 150)                  return '#60a5fa';  // blue-400
   if (eur < 180)                  return '#3b82f6';  // blue-500
   if (eur < 220)                  return '#2563eb';  // blue-600
-  return '#1d4ed8';                                  // blue-700 – very high
+  return '#1d4ed8';                                  // blue-700   – very high
 }
 
 /* ── Formatting helpers ───────────────────────────────── */
@@ -287,7 +288,7 @@ const columnHighlightPlugin = {
     ctx.save();
     values.forEach((v, i) => {
       if (v > 0) return;
-      ctx.fillStyle = v < 0 ? 'rgba(239,68,68,0.12)' : 'rgba(234,179,8,0.18)';
+      ctx.fillStyle = v < 0 ? 'rgba(239,68,68,0.12)' : 'rgba(234,179,8,0.25)';
       const xPx = x.getPixelForValue(i);
       ctx.fillRect(xPx - colWidth / 2, y.top, colWidth, y.bottom - y.top);
     });
@@ -426,8 +427,9 @@ function renderDay(dayData) {
   legend.innerHTML = `
     <span><span class="sun-dot" style="background:#d97706"></span>Sonnenaufgang ${sunData.riseStr}</span>
     <span><span class="sun-dot" style="background:#b45309"></span>Sonnenuntergang ${sunData.setStr}</span>
+    <span><span class="sun-dot" style="background:#fb923c;height:10px;border-radius:2px"></span>Unter Einspeisevergütung (subventioniert)</span>
     <span><span class="sun-dot" style="background:rgba(239,68,68,0.4);height:10px;border-radius:2px"></span>Negativpreis</span>
-    <span><span class="sun-dot" style="background:rgba(234,179,8,0.5);height:10px;border-radius:2px"></span>Nullpreis</span>
+    <span><span class="sun-dot" style="background:rgba(234,179,8,0.6);height:10px;border-radius:2px"></span>Nullpreis</span>
   `;
 
   chartCard.appendChild(wrap);
