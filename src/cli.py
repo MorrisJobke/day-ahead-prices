@@ -227,6 +227,15 @@ def notify(date, dry_run):
         click.echo(f"Keine negativen Tagpreise am {date} — keine Nachricht gesendet.")
 
 
+@cli.command('nachbarschaft-status')
+def nachbarschaft_status():
+    """Output status.json for nachbarschaftsstrom repo (last 7 days, negative price windows)."""
+    import json
+    generator = OutputGenerator()
+    status = generator.generate_nachbarschaft_status()
+    click.echo(json.dumps(status, indent=2, ensure_ascii=False))
+
+
 @cli.group()
 def pv():
     """PV generation vs. negative-price analysis."""

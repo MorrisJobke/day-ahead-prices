@@ -454,6 +454,38 @@ class OutputGenerator:
 
         return str(output_file)
 
+    def generate_nachbarschaft_status(self) -> Dict:
+        """Generate status payload for nachbarschaftsstrom repo (last 7 days)."""
+        tz = ZoneInfo('Europe/Berlin')
+        today = datetime.now(tz).date()
+
+        days = []
+        for i in range(6, -1, -1):
+            date = today - timedelta(days=i)
+            date_str = date.strftime('%Y-%m-%d')
+            result = self.analyzer.analyze_day(date_str)
+
+            if not result:
+                days.append({'date': date_str, 'active': False, 'windows': []})
+                continue
+
+            windows = []
+            for period in result['periods']:
+                start_dt = datetime.fromisoformat(period['start'])
+                end_dt = datetime.fromisoformat(period['end'])
+                windows.append(f"{start_dt.strftime('%H:%M')}–{end_dt.strftime('%H:%M')}")
+
+            days.append({
+                'date': date_str,
+                'active': bool(windows),
+                'windows': windows,
+            })
+
+        return {
+            'updated_at': datetime.now(tz).isoformat(),
+            'days': days,
+        }
+
     def generate_all(self) -> Dict:
         """Generate all output files.
 

@@ -52,6 +52,27 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
+      - name: Update nachbarschaftsstrom status.json
+        if: steps.check.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.NACHBARSCHAFT_TOKEN }}
+        run: |
+          python3 -m src.cli nachbarschaft-status > /tmp/status.json
+          CONTENT=$(base64 -w 0 < /tmp/status.json)
+          SHA=$(gh api repos/MorrisJobke/nachbarschaftsstrom/contents/status.json --jq '.sha' 2>/dev/null || echo "")
+          if [ -n "$SHA" ]; then
+            gh api repos/MorrisJobke/nachbarschaftsstrom/contents/status.json \
+              --method PUT \
+              -f message="chore: update status $(date -u +%Y-%m-%d)" \
+              -f content="$CONTENT" \
+              -f sha="$SHA"
+          else
+            gh api repos/MorrisJobke/nachbarschaftsstrom/contents/status.json \
+              --method PUT \
+              -f message="chore: create status $(date -u +%Y-%m-%d)" \
+              -f content="$CONTENT"
+          fi
+
       - name: Commit data and output to main
         if: steps.check.outputs.skip != 'true'
         run: |
