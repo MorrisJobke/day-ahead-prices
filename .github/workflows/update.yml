@@ -10,6 +10,11 @@ on:
     - cron: '*/10 12,13 * * *'   # 12:00–13:50 UTC (both seasons)
     - cron: '0 14 * * *'         # 14:00 UTC     (15:00 MEZ)
   workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force update even if data already present'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -30,7 +35,7 @@ jobs:
           else
             TARGET=$(TZ='Europe/Berlin' date +%Y-%m-%d)
           fi
-          if [ -f "data/raw/${TARGET}.json" ]; then
+          if [ "${{ github.event.inputs.force }}" != 'true' ] && [ -f "data/raw/${TARGET}.json" ]; then
             echo "Data for ${TARGET} already present – skipping"
             echo "skip=true" >> $GITHUB_OUTPUT
           else
