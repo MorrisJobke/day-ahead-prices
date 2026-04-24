@@ -455,31 +455,31 @@ class OutputGenerator:
         return str(output_file)
 
     def generate_nachbarschaft_status(self) -> Dict:
-        """Generate status payload for nachbarschaftsstrom repo (last 7 days)."""
+        """Generate status payload for nachbarschaftsstrom repo.
+
+        Covers the last 7 days plus tomorrow if prices are already cached
+        (they are fetched in the afternoon of the previous day).
+        """
         tz = ZoneInfo('Europe/Berlin')
         today = datetime.now(tz).date()
 
-        days = []
-        for i in range(6, -1, -1):
-            date = today - timedelta(days=i)
-            date_str = date.strftime('%Y-%m-%d')
+        def _day_entry(date_str: str) -> Dict:
             result = self.analyzer.analyze_day(date_str)
-
             if not result:
-                days.append({'date': date_str, 'active': False, 'windows': []})
-                continue
+                return {'date': date_str, 'active': False, 'windows': []}
+            windows = [
+                f"{datetime.fromisoformat(p['start']).strftime('%H:%M')}–"
+                f"{datetime.fromisoformat(p['end']).strftime('%H:%M')}"
+                for p in result['periods']
+            ]
+            return {'date': date_str, 'active': bool(windows), 'windows': windows}
 
-            windows = []
-            for period in result['periods']:
-                start_dt = datetime.fromisoformat(period['start'])
-                end_dt = datetime.fromisoformat(period['end'])
-                windows.append(f"{start_dt.strftime('%H:%M')}–{end_dt.strftime('%H:%M')}")
+        days = [_day_entry((today - timedelta(days=i)).strftime('%Y-%m-%d')) for i in range(6, -1, -1)]
 
-            days.append({
-                'date': date_str,
-                'active': bool(windows),
-                'windows': windows,
-            })
+        # Include tomorrow when prices have already been fetched (afternoon of today).
+        tomorrow_str = (today + timedelta(days=1)).strftime('%Y-%m-%d')
+        if self.analyzer.analyze_day(tomorrow_str) is not None:
+            days.append(_day_entry(tomorrow_str))
 
         return {
             'updated_at': datetime.now(tz).isoformat(),
