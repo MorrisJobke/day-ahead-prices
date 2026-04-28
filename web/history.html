@@ -348,6 +348,79 @@ function buildHeatmap(monthlyStats, yearlyStats) {
   return card;
 }
 
+/* ── Section B2: Days heatmap ─────────────────────────── */
+function buildDaysHeatmap(monthlyStats, yearlyStats) {
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const years = [...new Set(yearlyStats.map(y => y.year))].sort();
+  const MONTHS = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+  let maxNeg = 0;
+  for (const ms of monthlyStats) maxNeg = Math.max(maxNeg, ms.negative_days);
+
+  const lookup = {};
+  for (const ms of monthlyStats) {
+    lookup[`${ms.year}-${ms.month}`] = ms;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'heatmap';
+  grid.style.gridTemplateColumns = `auto ${years.map(() => '1fr').join(' ')}`;
+
+  const emptyHdr = document.createElement('div');
+  emptyHdr.className = 'hm-header';
+  grid.appendChild(emptyHdr);
+  for (const y of years) {
+    const hdr = document.createElement('div');
+    hdr.className = 'hm-header';
+    hdr.textContent = y;
+    grid.appendChild(hdr);
+  }
+
+  for (let m = 1; m <= 12; m++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'hm-month-label';
+    lbl.textContent = MONTHS[m - 1];
+    grid.appendChild(lbl);
+
+    for (const y of years) {
+      const ms = lookup[`${y}-${m}`];
+      const cell = document.createElement('div');
+      cell.className = 'hm-cell';
+      if (!ms) {
+        cell.textContent = '—';
+        cell.style.background = '#f1f5f9';
+        cell.style.color = '#cbd5e1';
+      } else {
+        const { bg, fg } = heatColor(ms.negative_days, maxNeg);
+        cell.style.background = bg;
+        cell.style.color = fg;
+        cell.textContent = ms.negative_days > 0 ? ms.negative_days + ' T' : '0 T';
+        cell.title = `${MONTHS[m-1]} ${y}: ${ms.negative_days} Tage mit neg. Preisen (von ${ms.days_analyzed} analysierten Tagen)`;
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  const title = document.createElement('div');
+  title.className = 'section-title';
+  title.textContent = 'Tage mit negativen Preisen pro Monat';
+  card.appendChild(title);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'heatmap-wrap';
+  wrap.appendChild(grid);
+  card.appendChild(wrap);
+
+  const caption = document.createElement('div');
+  caption.className = 'section-caption';
+  caption.textContent = 'Anzahl der Tage pro Monat, an denen mindestens eine Stunde mit negativem Strompreis (< 0 €/MWh) aufgetreten ist';
+  card.appendChild(caption);
+
+  return card;
+}
+
 /* ── Section C: Stacked bar chart ────────────────────── */
 function buildStackedBar(monthlyStats) {
   const card = document.createElement('div');
@@ -592,6 +665,7 @@ async function init() {
 
     main.appendChild(buildYearCards(ys));
     main.appendChild(buildHeatmap(ms, ys));
+    main.appendChild(buildDaysHeatmap(ms, ys));
     main.appendChild(buildStackedBar(ms));
     main.appendChild(buildSpreadChart(ms, ys));
     main.appendChild(buildTable(ms));

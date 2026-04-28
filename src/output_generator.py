@@ -304,6 +304,7 @@ class OutputGenerator:
             if key not in month_data:
                 month_data[key] = {
                     'days': 0,
+                    'negative_days': 0,
                     'total_hours': 0.0,
                     'daylight_hours': 0.0,
                     'daylight_neg_hours': 0.0,
@@ -321,6 +322,8 @@ class OutputGenerator:
 
             md = month_data[key]
             md['days'] += 1
+            if any(p < 0 for p in prices):
+                md['negative_days'] += 1
             day_min = min(prices)
             day_max = max(prices)
             md['daily_spreads'].append(day_max - day_min)
@@ -371,6 +374,7 @@ class OutputGenerator:
                 'month': month,
                 'label': f"{month_labels[month]} {year}",
                 'days_analyzed': md['days'],
+                'negative_days': md['negative_days'],
                 'total_hours': round(total_hours, 2),
                 'avg_price': round(avg_price, 2),
                 'avg_daily_spread': round(sum(spreads) / len(spreads), 2) if spreads else 0.0,
