@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-25T14:43:37.667881+02:00",
+  "generated_at": "2026-05-26T14:59:05.400613+02:00",
   "monthly_stats": [
     {
       "year": 2020,
@@ -1753,24 +1753,24 @@
       "year": 2026,
       "month": 5,
       "label": "Mai 2026",
-      "days_analyzed": 26,
-      "negative_days": 10,
-      "total_hours": 624.0,
-      "avg_price": 97.64,
-      "avg_daily_spread": 200.09,
+      "days_analyzed": 27,
+      "negative_days": 11,
+      "total_hours": 648.0,
+      "avg_price": 97.14,
+      "avg_daily_spread": 199.1,
       "max_daily_spread": 732.98,
       "buckets": {
         "deeply_negative": 10.5,
         "negative": 12.25,
-        "near_zero_neg": 39.0,
-        "near_zero_pos": 32.75,
-        "normal": 529.5
+        "near_zero_neg": 44.75,
+        "near_zero_pos": 34.5,
+        "normal": 546.0
       },
-      "negative_hours": 61.75,
-      "negative_pct": 9.9,
-      "daylight_hours": 408.5,
-      "daylight_negative_hours": 61.75,
-      "daylight_negative_pct": 15.12
+      "negative_hours": 67.5,
+      "negative_pct": 10.42,
+      "daylight_hours": 425.0,
+      "daylight_negative_hours": 67.5,
+      "daylight_negative_pct": 15.88
     }
   ],
   "yearly_stats": [
@@ -1891,21 +1891,21 @@
     {
       "year": 2026,
       "months_analyzed": 5,
-      "total_hours": 3503.0,
-      "avg_price": 96.5,
-      "avg_daily_spread": 152.1,
+      "total_hours": 3527.0,
+      "avg_price": 96.42,
+      "avg_daily_spread": 151.91,
       "buckets": {
         "deeply_negative": 36.25,
         "negative": 47.75,
-        "near_zero_neg": 143.75,
-        "near_zero_pos": 150.25,
-        "normal": 3125.0
+        "near_zero_neg": 149.5,
+        "near_zero_pos": 152.0,
+        "normal": 3141.5
       },
-      "negative_hours": 227.75,
-      "negative_pct": 6.5,
-      "daylight_hours": 1767.25,
-      "daylight_negative_hours": 220.75,
-      "daylight_negative_pct": 12.49
+      "negative_hours": 233.5,
+      "negative_pct": 6.62,
+      "daylight_hours": 1783.75,
+      "daylight_negative_hours": 226.5,
+      "daylight_negative_pct": 12.7
     }
   ]
 }
