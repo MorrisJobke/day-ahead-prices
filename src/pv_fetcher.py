@@ -161,11 +161,25 @@ class PVFetcher:
         return sorted(f.stem for f in self.cache_dir.glob('*.json'))
 
     def fetch_date_range(self, start_date: str, end_date: str, force: bool = False) -> List[str]:
-        """Fetch all days in range, skipping already-cached dates unless force=True."""
+        """Fetch all days in range, skipping already-cached dates unless force=True.
+
+        The most-recently-cached date is always re-fetched because a previous
+        mid-day run may have stored incomplete data for that day.
+        """
         current = datetime.strptime(start_date, '%Y-%m-%d')
         end = datetime.strptime(end_date, '%Y-%m-%d')
         today = datetime.now(ZoneInfo('Europe/Berlin')).date()
         fetched = []
+
+        # Find the latest cached date in range so it can always be refreshed.
+        latest_cached = None
+        if not force:
+            scan = current
+            while scan.date() <= min(end.date(), today):
+                date_str = scan.strftime('%Y-%m-%d')
+                if (self.cache_dir / f"{date_str}.json").exists():
+                    latest_cached = date_str
+                scan += timedelta(days=1)
 
         while current.date() <= end.date():
             date_str = current.strftime('%Y-%m-%d')
@@ -174,8 +188,9 @@ class PVFetcher:
             if current.date() > today:
                 current += timedelta(days=1)
                 continue
-            if force or not cache_file.exists():
-                data = self.fetch_day(date_str, force=force)
+            refresh = force or date_str == latest_cached
+            if refresh or not cache_file.exists():
+                data = self.fetch_day(date_str, force=refresh)
                 if data is not None:
                     fetched.append(date_str)
             current += timedelta(days=1)
