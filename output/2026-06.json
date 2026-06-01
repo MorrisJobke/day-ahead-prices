@@ -1,8 +1,8 @@
 {
   "year": 2026,
   "month": 6,
-  "days_analyzed": 1,
-  "total_units": 96,
+  "days_analyzed": 2,
+  "total_units": 192,
   "negative_units": 0,
   "negative_hours": 0.0,
   "daily_breakdown": [
@@ -17,6 +17,18 @@
       "min_price": 86.0,
       "max_price": 422.28,
       "avg_price": 151.86468749999997
+    },
+    {
+      "date": "2026-06-02",
+      "resolution": "quarter_hourly",
+      "total_units": 96,
+      "negative_units": 0,
+      "negative_hours": 0,
+      "negative_percentage": 0.0,
+      "periods": [],
+      "min_price": 78.86,
+      "max_price": 177.62,
+      "avg_price": 122.02083333333333
     }
   ]
 }
