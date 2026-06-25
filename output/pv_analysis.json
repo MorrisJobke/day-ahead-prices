@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-31T21:06:15.568990+02:00",
+  "generated": "2026-06-25T22:35:18.692532+02:00",
   "months": [
     {
       "year": 2025,
@@ -105,14 +105,26 @@
       "negative_window_kwh": 768.47,
       "negative_window_pct": 30.4,
       "days_with_data": 31,
-      "grid_export_kwh": 1934.46,
+      "grid_export_kwh": 1934.48,
       "grid_export_negative_kwh": 534.8,
       "grid_export_negative_pct": 21.2
+    },
+    {
+      "year": 2026,
+      "month": 6,
+      "label": "Jun 2026",
+      "total_kwh": 1704.153,
+      "negative_window_kwh": 332.59,
+      "negative_window_pct": 19.5,
+      "days_with_data": 25,
+      "grid_export_kwh": 1281.587,
+      "grid_export_negative_kwh": 197.77,
+      "grid_export_negative_pct": 11.6
     }
   ],
-  "total_kwh": 8532.53,
-  "total_negative_window_kwh": 2282.53,
-  "total_negative_window_pct": 26.8,
-  "total_grid_export_negative_kwh": 1416.09,
-  "total_grid_export_negative_pct": 16.6
+  "total_kwh": 10236.683,
+  "total_negative_window_kwh": 2615.12,
+  "total_negative_window_pct": 25.5,
+  "total_grid_export_negative_kwh": 1613.86,
+  "total_grid_export_negative_pct": 15.8
 }
