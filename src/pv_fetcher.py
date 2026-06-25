@@ -126,14 +126,20 @@ class PVFetcher:
         # Build 15-min slots from 5-minute data
         slots = self._stats_to_slots(stats_5m, day_start_ts, day_end_ts, 300)
 
-        # For each hour with no 5-min coverage, fill from hourly data
+        # Build hourly reference (already per-sub-slot: delta/4 per 15-min)
         hourly_slots = self._stats_to_slots(stats_1h, day_start_ts, day_end_ts, 3600)
-        for hour_slot_ts, hour_wh in hourly_slots.items():
-            sub_slot_tss = [hour_slot_ts + i * 900 for i in range(4)]
-            if not any(st in slots for st in sub_slot_tss):
-                for st in sub_slot_tss:
-                    if day_start_ts <= st < day_end_ts:
-                        slots[st] = slots.get(st, 0.0) + hour_wh / 4
+
+        # Fill slots missing from 5-min data using hourly reference
+        for slot_ts, hourly_wh in hourly_slots.items():
+            if slot_ts not in slots:
+                slots[slot_ts] = hourly_wh
+
+        # Replace spike artifacts: single 5-min slots >3× their hourly reference
+        # (caused by sensor reconnection recording accumulated gap production at once)
+        for slot_ts in list(slots.keys()):
+            hourly_wh = hourly_slots.get(slot_ts, 0.0)
+            if hourly_wh > 0 and slots[slot_ts] > hourly_wh * 3:
+                slots[slot_ts] = hourly_wh
 
         sum_readings = [
             {'unix_seconds': int(e['start']), 'sum_kwh': round(e['sum'], 3)}
