@@ -58,64 +58,29 @@ class PVFetcher:
         finally:
             ws.close()
 
-    def _fetch_from_ha(self, date: str) -> Optional[Dict]:
-        """Fetch HA statistics for one day and aggregate to 15-min slots.
-
-        HA returns timestamps in milliseconds. 5-min data is retained for ~3
-        months; older data is automatically aggregated to hourly. We try 5min
-        first and fall back to hour. Hourly production is distributed evenly
-        across four 15-min sub-slots so the cache format is always consistent.
-        """
-        tz = ZoneInfo('Europe/Berlin')
-        day_start = datetime.strptime(date, '%Y-%m-%d').replace(tzinfo=tz)
-        day_end = day_start + timedelta(days=1)
-        # Fetch 5 min (or 1 h) before day start to capture the opening sum
-        fetch_start_5m = day_start - timedelta(minutes=5)
-        fetch_start_1h = day_start - timedelta(hours=1)
-
-        try:
-            stats = self._ws_statistics(fetch_start_5m, day_end, period='5minute')
-            period_seconds = 300  # 5 min
-            if not stats:
-                stats = self._ws_statistics(fetch_start_1h, day_end, period='hour')
-                period_seconds = 3600  # 1 h
-        except RuntimeError as e:
-            raise RuntimeError(f"HA request failed for {date}: {e}") from e
-
-        if not stats:
-            return {'date': date, 'entity_id': self.entity_id, 'slots': [], 'total_wh': 0.0}
-
-        # HA returns timestamps in milliseconds — convert to seconds
-        for entry in stats:
-            entry['start'] = float(entry['start']) / 1000.0
-
-        stats.sort(key=lambda x: x['start'])
-
-        day_start_ts = day_start.timestamp()
-        day_end_ts = day_end.timestamp()
+    def _stats_to_slots(
+        self,
+        stats: List[Dict],
+        day_start_ts: float,
+        day_end_ts: float,
+        period_seconds: int,
+    ) -> Dict[int, float]:
+        """Convert sorted (start, sum) stats entries into {slot_ts: wh} dict."""
         slots: Dict[int, float] = {}
-        sum_readings: List[Dict] = []
         prev_sum = None
-
         for entry in stats:
             cur_sum = entry.get('sum')
             if cur_sum is None:
                 prev_sum = None
                 continue
-            # Store cumulative sum as meter reading reference.
-            # Note: 'sum' is relative to when HA started recording statistics,
-            # not the absolute reading since installation. Deltas are correct.
-            sum_readings.append({'unix_seconds': int(entry['start']), 'sum_kwh': round(cur_sum, 3)})
             if prev_sum is not None:
                 delta_wh = max(0.0, cur_sum - prev_sum) * 1000.0
                 entry_ts = entry['start']
                 if period_seconds <= 900:
-                    # 5-min (300s): multiple entries bucket into the same 15-min slot
                     slot_start = int(entry_ts // 900) * 900
                     if day_start_ts <= slot_start < day_end_ts:
                         slots[slot_start] = slots.get(slot_start, 0.0) + delta_wh
                 else:
-                    # hourly (3600s): distribute production evenly across 4 sub-slots
                     sub_slots = period_seconds // 900
                     wh_per_sub = delta_wh / sub_slots
                     for i in range(sub_slots):
@@ -123,6 +88,58 @@ class PVFetcher:
                         if day_start_ts <= slot_start < day_end_ts:
                             slots[slot_start] = slots.get(slot_start, 0.0) + wh_per_sub
             prev_sum = cur_sum
+        return slots
+
+    def _fetch_from_ha(self, date: str) -> Optional[Dict]:
+        """Fetch HA statistics for one day and aggregate to 15-min slots.
+
+        Always fetches both 5-minute and hourly statistics. 5-min data is used
+        where available. For hours with no 5-min coverage (e.g. after a sensor
+        outage backfilled via hourly import_statistics), the hourly delta is
+        distributed evenly across four 15-min sub-slots.
+        """
+        tz = ZoneInfo('Europe/Berlin')
+        day_start = datetime.strptime(date, '%Y-%m-%d').replace(tzinfo=tz)
+        day_end = day_start + timedelta(days=1)
+        fetch_start_5m = day_start - timedelta(minutes=5)
+        fetch_start_1h = day_start - timedelta(hours=1)
+
+        try:
+            stats_5m = self._ws_statistics(fetch_start_5m, day_end, period='5minute')
+            stats_1h = self._ws_statistics(fetch_start_1h, day_end, period='hour')
+        except RuntimeError as e:
+            raise RuntimeError(f"HA request failed for {date}: {e}") from e
+
+        if not stats_5m and not stats_1h:
+            return {'date': date, 'entity_id': self.entity_id, 'slots': [], 'total_wh': 0.0}
+
+        # HA returns timestamps in milliseconds — convert to seconds
+        for entry in stats_5m + stats_1h:
+            entry['start'] = float(entry['start']) / 1000.0
+
+        stats_5m.sort(key=lambda x: x['start'])
+        stats_1h.sort(key=lambda x: x['start'])
+
+        day_start_ts = day_start.timestamp()
+        day_end_ts   = day_end.timestamp()
+
+        # Build 15-min slots from 5-minute data
+        slots = self._stats_to_slots(stats_5m, day_start_ts, day_end_ts, 300)
+
+        # For each hour with no 5-min coverage, fill from hourly data
+        hourly_slots = self._stats_to_slots(stats_1h, day_start_ts, day_end_ts, 3600)
+        for hour_slot_ts, hour_wh in hourly_slots.items():
+            sub_slot_tss = [hour_slot_ts + i * 900 for i in range(4)]
+            if not any(st in slots for st in sub_slot_tss):
+                for st in sub_slot_tss:
+                    if day_start_ts <= st < day_end_ts:
+                        slots[st] = slots.get(st, 0.0) + hour_wh / 4
+
+        sum_readings = [
+            {'unix_seconds': int(e['start']), 'sum_kwh': round(e['sum'], 3)}
+            for e in stats_5m + stats_1h if e.get('sum') is not None
+        ]
+        sum_readings.sort(key=lambda x: x['unix_seconds'])
 
         slot_list = [
             {'unix_seconds': ts, 'wh': round(wh, 2)}
