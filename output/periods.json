@@ -1,5 +1,5 @@
 {
-  "total_periods": 443,
+  "total_periods": 445,
   "periods": [
     {
       "start": "2020-01-31T00:00:00+01:00",
@@ -4430,6 +4430,26 @@
       "max_price": -0.01,
       "avg_price": -0.01,
       "date": "2026-06-27"
+    },
+    {
+      "start": "2026-06-28T11:45:00+02:00",
+      "end": "2026-06-28T12:00:00+02:00",
+      "duration_units": 1,
+      "duration_hours": 0.25,
+      "min_price": -0.07,
+      "max_price": -0.07,
+      "avg_price": -0.07,
+      "date": "2026-06-28"
+    },
+    {
+      "start": "2026-06-28T12:30:00+02:00",
+      "end": "2026-06-28T14:30:00+02:00",
+      "duration_units": 8,
+      "duration_hours": 2.0,
+      "min_price": -0.92,
+      "max_price": -0.01,
+      "avg_price": -0.47750000000000004,
+      "date": "2026-06-28"
     }
   ]
 }
