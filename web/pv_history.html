@@ -332,6 +332,7 @@ async function load() {
       plugins: {
         legend: { position: 'top', labels: { font: { size: 11 }, padding: 12 } },
         tooltip: {
+          mode: 'index',
           callbacks: {
             label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} kWh`,
             footer: items => {
