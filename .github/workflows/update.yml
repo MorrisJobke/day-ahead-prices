@@ -93,7 +93,7 @@ jobs:
           git push
 
       - name: Deploy output/ to gh-pages
-        if: steps.check.outputs.skip != 'true'
+        if: steps.check.outputs.skip != 'true' || github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
