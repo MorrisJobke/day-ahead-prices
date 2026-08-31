@@ -1,12 +1,12 @@
 {
   "data_period": {
     "start": "2020-01-01",
-    "end": "2026-08-31",
-    "total_days": 2435
+    "end": "2026-09-01",
+    "total_days": 2436
   },
-  "total_negative_units": 3680,
-  "total_negative_hours": 2261.75,
-  "total_periods": 471,
+  "total_negative_units": 3698,
+  "total_negative_hours": 2266.25,
+  "total_periods": 472,
   "current_year": {
     "year": 2026,
     "negative_units": 1710,
@@ -19,9 +19,10 @@
       "5": 78.75,
       "6": 49.75,
       "7": 76.5,
-      "8": 56.5
+      "8": 56.5,
+      "9": 0.0
     },
-    "months": 8
+    "months": 9
   },
   "eeg_rule_info": {
     "rule_start_date": "2025-02-25",
