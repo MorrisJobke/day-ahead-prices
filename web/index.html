@@ -58,6 +58,7 @@
     .tab-btn:disabled { opacity: 0.35; cursor: not-allowed; }
     .nav-btn:hover:not(.active) { background: #2d3f55; color: #f8fafc; }
     .page-nav { display: flex; gap: 0.4rem; }
+    .unit-toggle { display: flex; gap: 0.5rem; padding-left: 0.75rem; border-left: 1px solid #334155; }
 
     /* ── Layout ─────────────────────────────────────── */
     main {
@@ -198,6 +199,10 @@
       <a href="history.html"     class="nav-btn inactive">Verlauf</a>
       <a href="pv_history.html"  class="nav-btn inactive">☀ PV</a>
     </nav>
+    <div class="unit-toggle">
+      <button id="unit-mwh"   class="tab-btn active"   onclick="setUnit('mwh')">€/MWh</button>
+      <button id="unit-ctkwh" class="tab-btn inactive" onclick="setUnit('ctkwh')">ct/kWh</button>
+    </div>
   </div>
 </header>
 
@@ -213,6 +218,31 @@
 let appData   = null;   // parsed daily_view.json
 let activeDay = 'today';
 let chart     = null;
+
+/* ── Display unit (€/MWh vs. ct/kWh), persisted per browser ── */
+let unit = 'mwh';
+try {
+  if (localStorage.getItem('priceUnit') === 'ctkwh') unit = 'ctkwh';
+} catch (e) { /* localStorage unavailable (e.g. private mode) */ }
+
+function convert(eurPerMwh) {
+  return unit === 'ctkwh' ? eurPerMwh * 0.1 : eurPerMwh;
+}
+function unitSuffix() {
+  return unit === 'ctkwh' ? 'ct/kWh' : '€/MWh';
+}
+function setUnit(u) {
+  if (u === unit) return;
+  unit = u;
+  try { localStorage.setItem('priceUnit', unit); } catch (e) { /* ignore */ }
+  updateUnitButtons();
+  if (appData) renderDay(appData[activeDay]);
+}
+function updateUnitButtons() {
+  document.getElementById('unit-mwh').className   = 'tab-btn ' + (unit === 'mwh'   ? 'active' : 'inactive');
+  document.getElementById('unit-ctkwh').className = 'tab-btn ' + (unit === 'ctkwh' ? 'active' : 'inactive');
+}
+updateUnitButtons();
 
 /* ── Colour scale ─────────────────────────────────────── */
 // From PV-owner perspective: negative = red (no compensation),
@@ -234,7 +264,13 @@ function priceColor(eur) {
 
 /* ── Formatting helpers ───────────────────────────────── */
 function fmtEUR(v) {
-  return v.toFixed(1) + '\u00a0€/MWh';
+  const val      = convert(v);
+  const decimals = unit === 'ctkwh' ? 2 : 1;
+  return val.toFixed(decimals) + '\u00a0' + unitSuffix();
+}
+function fmtAxisTick(v) {
+  const val = convert(v);
+  return unit === 'ctkwh' ? val.toFixed(1) + '\u00a0ct' : val.toFixed(0) + '\u00a0€';
 }
 function fmtDuration(h) {
   const hrs  = Math.floor(h);
@@ -482,7 +518,7 @@ function renderDay(dayData) {
         },
         y: {
           ticks: {
-            callback: v => v + ' €',
+            callback: v => fmtAxisTick(v),
             font: { size: 10 },
           },
           grid: {
