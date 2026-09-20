@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-19T16:42:23.856006+02:00",
+  "generated_at": "2026-09-20T16:47:59.310844+02:00",
   "monthly_stats": [
     {
       "year": 2020,
@@ -1845,24 +1845,24 @@
       "year": 2026,
       "month": 9,
       "label": "Sep 2026",
-      "days_analyzed": 20,
+      "days_analyzed": 21,
       "negative_days": 6,
-      "total_hours": 480.0,
-      "avg_price": 138.17,
-      "avg_daily_spread": 231.72,
+      "total_hours": 504.0,
+      "avg_price": 136.19,
+      "avg_daily_spread": 233.82,
       "max_daily_spread": 588.01,
       "buckets": {
         "deeply_negative": 0.0,
         "negative": 2.5,
         "near_zero_neg": 29.0,
-        "near_zero_pos": 26.25,
-        "normal": 422.25
+        "near_zero_pos": 31.0,
+        "normal": 441.5
       },
       "negative_hours": 31.5,
-      "negative_pct": 6.56,
-      "daylight_hours": 264.0,
+      "negative_pct": 6.25,
+      "daylight_hours": 276.5,
       "daylight_negative_hours": 31.5,
-      "daylight_negative_pct": 11.93
+      "daylight_negative_pct": 11.39
     }
   ],
   "yearly_stats": [
@@ -1983,21 +1983,21 @@
     {
       "year": 2026,
       "months_analyzed": 9,
-      "total_hours": 6311.0,
-      "avg_price": 105.8,
-      "avg_daily_spread": 180.1,
+      "total_hours": 6335.0,
+      "avg_price": 105.77,
+      "avg_daily_spread": 180.34,
       "buckets": {
         "deeply_negative": 37.0,
         "negative": 70.75,
         "near_zero_neg": 351.25,
-        "near_zero_pos": 311.5,
-        "normal": 5540.5
+        "near_zero_pos": 316.25,
+        "normal": 5559.75
       },
       "negative_hours": 459.0,
-      "negative_pct": 7.27,
-      "daylight_hours": 3577.5,
+      "negative_pct": 7.25,
+      "daylight_hours": 3590.0,
       "daylight_negative_hours": 452.0,
-      "daylight_negative_pct": 12.63
+      "daylight_negative_pct": 12.59
     }
   ]
 }
