@@ -1,16 +1,16 @@
 {
   "data_period": {
     "start": "2020-01-01",
-    "end": "2026-10-09",
-    "total_days": 2474
+    "end": "2026-10-10",
+    "total_days": 2475
   },
   "total_negative_units": 3841,
   "total_negative_hours": 2302.0,
   "total_periods": 479,
   "current_year": {
     "year": 2026,
-    "negative_units": 1853,
-    "negative_hours": 463.25,
+    "negative_units": 1854,
+    "negative_hours": 463.5,
     "monthly_negative_hours": {
       "1": 2.5,
       "2": 5.75,
@@ -21,7 +21,7 @@
       "7": 76.5,
       "8": 56.5,
       "9": 35.75,
-      "10": 0.0
+      "10": 0.25
     },
     "months": 10
   },
