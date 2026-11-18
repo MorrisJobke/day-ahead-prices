@@ -4,403 +4,6 @@
     "lng": 10.4515
   },
   "yesterday": {
-    "date": "2026-11-16",
-    "resolution": "quarter_hourly",
-    "prices": [
-      {
-        "unix_seconds": 1794783600,
-        "price": 145.0
-      },
-      {
-        "unix_seconds": 1794784500,
-        "price": 138.19
-      },
-      {
-        "unix_seconds": 1794785400,
-        "price": 130.85
-      },
-      {
-        "unix_seconds": 1794786300,
-        "price": 128.55
-      },
-      {
-        "unix_seconds": 1794787200,
-        "price": 132.19
-      },
-      {
-        "unix_seconds": 1794788100,
-        "price": 125.08
-      },
-      {
-        "unix_seconds": 1794789000,
-        "price": 122.03
-      },
-      {
-        "unix_seconds": 1794789900,
-        "price": 120.65
-      },
-      {
-        "unix_seconds": 1794790800,
-        "price": 118.67
-      },
-      {
-        "unix_seconds": 1794791700,
-        "price": 115.79
-      },
-      {
-        "unix_seconds": 1794792600,
-        "price": 120.76
-      },
-      {
-        "unix_seconds": 1794793500,
-        "price": 123.91
-      },
-      {
-        "unix_seconds": 1794794400,
-        "price": 116.11
-      },
-      {
-        "unix_seconds": 1794795300,
-        "price": 116.15
-      },
-      {
-        "unix_seconds": 1794796200,
-        "price": 112.61
-      },
-      {
-        "unix_seconds": 1794797100,
-        "price": 111.53
-      },
-      {
-        "unix_seconds": 1794798000,
-        "price": 115.0
-      },
-      {
-        "unix_seconds": 1794798900,
-        "price": 117.22
-      },
-      {
-        "unix_seconds": 1794799800,
-        "price": 115.0
-      },
-      {
-        "unix_seconds": 1794800700,
-        "price": 115.0
-      },
-      {
-        "unix_seconds": 1794801600,
-        "price": 122.19
-      },
-      {
-        "unix_seconds": 1794802500,
-        "price": 126.39
-      },
-      {
-        "unix_seconds": 1794803400,
-        "price": 130.08
-      },
-      {
-        "unix_seconds": 1794804300,
-        "price": 140.09
-      },
-      {
-        "unix_seconds": 1794805200,
-        "price": 152.16
-      },
-      {
-        "unix_seconds": 1794806100,
-        "price": 164.83
-      },
-      {
-        "unix_seconds": 1794807000,
-        "price": 178.55
-      },
-      {
-        "unix_seconds": 1794807900,
-        "price": 201.86
-      },
-      {
-        "unix_seconds": 1794808800,
-        "price": 211.7
-      },
-      {
-        "unix_seconds": 1794809700,
-        "price": 220.28
-      },
-      {
-        "unix_seconds": 1794810600,
-        "price": 210.25
-      },
-      {
-        "unix_seconds": 1794811500,
-        "price": 214.42
-      },
-      {
-        "unix_seconds": 1794812400,
-        "price": 223.04
-      },
-      {
-        "unix_seconds": 1794813300,
-        "price": 226.12
-      },
-      {
-        "unix_seconds": 1794814200,
-        "price": 227.11
-      },
-      {
-        "unix_seconds": 1794815100,
-        "price": 227.18
-      },
-      {
-        "unix_seconds": 1794816000,
-        "price": 234.93
-      },
-      {
-        "unix_seconds": 1794816900,
-        "price": 225.7
-      },
-      {
-        "unix_seconds": 1794817800,
-        "price": 216.31
-      },
-      {
-        "unix_seconds": 1794818700,
-        "price": 205.16
-      },
-      {
-        "unix_seconds": 1794819600,
-        "price": 220.7
-      },
-      {
-        "unix_seconds": 1794820500,
-        "price": 210.15
-      },
-      {
-        "unix_seconds": 1794821400,
-        "price": 205.21
-      },
-      {
-        "unix_seconds": 1794822300,
-        "price": 205.09
-      },
-      {
-        "unix_seconds": 1794823200,
-        "price": 206.6
-      },
-      {
-        "unix_seconds": 1794824100,
-        "price": 202.4
-      },
-      {
-        "unix_seconds": 1794825000,
-        "price": 198.41
-      },
-      {
-        "unix_seconds": 1794825900,
-        "price": 197.93
-      },
-      {
-        "unix_seconds": 1794826800,
-        "price": 202.45
-      },
-      {
-        "unix_seconds": 1794827700,
-        "price": 194.75
-      },
-      {
-        "unix_seconds": 1794828600,
-        "price": 197.38
-      },
-      {
-        "unix_seconds": 1794829500,
-        "price": 184.37
-      },
-      {
-        "unix_seconds": 1794830400,
-        "price": 187.57
-      },
-      {
-        "unix_seconds": 1794831300,
-        "price": 184.65
-      },
-      {
-        "unix_seconds": 1794832200,
-        "price": 190.37
-      },
-      {
-        "unix_seconds": 1794833100,
-        "price": 184.85
-      },
-      {
-        "unix_seconds": 1794834000,
-        "price": 192.91
-      },
-      {
-        "unix_seconds": 1794834900,
-        "price": 197.15
-      },
-      {
-        "unix_seconds": 1794835800,
-        "price": 200.02
-      },
-      {
-        "unix_seconds": 1794836700,
-        "price": 210.31
-      },
-      {
-        "unix_seconds": 1794837600,
-        "price": 199.57
-      },
-      {
-        "unix_seconds": 1794838500,
-        "price": 211.24
-      },
-      {
-        "unix_seconds": 1794839400,
-        "price": 210.47
-      },
-      {
-        "unix_seconds": 1794840300,
-        "price": 222.17
-      },
-      {
-        "unix_seconds": 1794841200,
-        "price": 214.99
-      },
-      {
-        "unix_seconds": 1794842100,
-        "price": 228.69
-      },
-      {
-        "unix_seconds": 1794843000,
-        "price": 234.02
-      },
-      {
-        "unix_seconds": 1794843900,
-        "price": 247.29
-      },
-      {
-        "unix_seconds": 1794844800,
-        "price": 247.16
-      },
-      {
-        "unix_seconds": 1794845700,
-        "price": 254.78
-      },
-      {
-        "unix_seconds": 1794846600,
-        "price": 258.17
-      },
-      {
-        "unix_seconds": 1794847500,
-        "price": 267.25
-      },
-      {
-        "unix_seconds": 1794848400,
-        "price": 266.71
-      },
-      {
-        "unix_seconds": 1794849300,
-        "price": 265.97
-      },
-      {
-        "unix_seconds": 1794850200,
-        "price": 268.4
-      },
-      {
-        "unix_seconds": 1794851100,
-        "price": 272.08
-      },
-      {
-        "unix_seconds": 1794852000,
-        "price": 273.0
-      },
-      {
-        "unix_seconds": 1794852900,
-        "price": 266.95
-      },
-      {
-        "unix_seconds": 1794853800,
-        "price": 264.79
-      },
-      {
-        "unix_seconds": 1794854700,
-        "price": 261.73
-      },
-      {
-        "unix_seconds": 1794855600,
-        "price": 246.83
-      },
-      {
-        "unix_seconds": 1794856500,
-        "price": 237.42
-      },
-      {
-        "unix_seconds": 1794857400,
-        "price": 233.31
-      },
-      {
-        "unix_seconds": 1794858300,
-        "price": 225.67
-      },
-      {
-        "unix_seconds": 1794859200,
-        "price": 220.45
-      },
-      {
-        "unix_seconds": 1794860100,
-        "price": 214.99
-      },
-      {
-        "unix_seconds": 1794861000,
-        "price": 214.39
-      },
-      {
-        "unix_seconds": 1794861900,
-        "price": 210.5
-      },
-      {
-        "unix_seconds": 1794862800,
-        "price": 213.3
-      },
-      {
-        "unix_seconds": 1794863700,
-        "price": 214.99
-      },
-      {
-        "unix_seconds": 1794864600,
-        "price": 212.61
-      },
-      {
-        "unix_seconds": 1794865500,
-        "price": 205.44
-      },
-      {
-        "unix_seconds": 1794866400,
-        "price": 214.8
-      },
-      {
-        "unix_seconds": 1794867300,
-        "price": 208.38
-      },
-      {
-        "unix_seconds": 1794868200,
-        "price": 199.25
-      },
-      {
-        "unix_seconds": 1794869100,
-        "price": 190.93
-      }
-    ],
-    "negative_periods": [],
-    "stats": {
-      "min_price": 111.53,
-      "max_price": 273.0,
-      "avg_price": 194.49,
-      "negative_hours": 0
-    }
-  },
-  "today": {
     "date": "2026-11-17",
     "resolution": "quarter_hourly",
     "prices": [
@@ -797,7 +400,7 @@
       "negative_hours": 0
     }
   },
-  "tomorrow": {
+  "today": {
     "date": "2026-11-18",
     "resolution": "quarter_hourly",
     "prices": [
@@ -1191,6 +794,403 @@
       "min_price": 78.45,
       "max_price": 216.99,
       "avg_price": 146.25,
+      "negative_hours": 0
+    }
+  },
+  "tomorrow": {
+    "date": "2026-11-19",
+    "resolution": "quarter_hourly",
+    "prices": [
+      {
+        "unix_seconds": 1795042800,
+        "price": 167.53
+      },
+      {
+        "unix_seconds": 1795043700,
+        "price": 166.6
+      },
+      {
+        "unix_seconds": 1795044600,
+        "price": 173.22
+      },
+      {
+        "unix_seconds": 1795045500,
+        "price": 172.34
+      },
+      {
+        "unix_seconds": 1795046400,
+        "price": 170.36
+      },
+      {
+        "unix_seconds": 1795047300,
+        "price": 168.88
+      },
+      {
+        "unix_seconds": 1795048200,
+        "price": 172.6
+      },
+      {
+        "unix_seconds": 1795049100,
+        "price": 173.01
+      },
+      {
+        "unix_seconds": 1795050000,
+        "price": 168.9
+      },
+      {
+        "unix_seconds": 1795050900,
+        "price": 166.52
+      },
+      {
+        "unix_seconds": 1795051800,
+        "price": 173.63
+      },
+      {
+        "unix_seconds": 1795052700,
+        "price": 171.35
+      },
+      {
+        "unix_seconds": 1795053600,
+        "price": 169.87
+      },
+      {
+        "unix_seconds": 1795054500,
+        "price": 173.82
+      },
+      {
+        "unix_seconds": 1795055400,
+        "price": 175.33
+      },
+      {
+        "unix_seconds": 1795056300,
+        "price": 180.99
+      },
+      {
+        "unix_seconds": 1795057200,
+        "price": 178.6
+      },
+      {
+        "unix_seconds": 1795058100,
+        "price": 182.34
+      },
+      {
+        "unix_seconds": 1795059000,
+        "price": 185.04
+      },
+      {
+        "unix_seconds": 1795059900,
+        "price": 190.38
+      },
+      {
+        "unix_seconds": 1795060800,
+        "price": 184.21
+      },
+      {
+        "unix_seconds": 1795061700,
+        "price": 191.61
+      },
+      {
+        "unix_seconds": 1795062600,
+        "price": 197.89
+      },
+      {
+        "unix_seconds": 1795063500,
+        "price": 211.2
+      },
+      {
+        "unix_seconds": 1795064400,
+        "price": 193.99
+      },
+      {
+        "unix_seconds": 1795065300,
+        "price": 219.83
+      },
+      {
+        "unix_seconds": 1795066200,
+        "price": 240.01
+      },
+      {
+        "unix_seconds": 1795067100,
+        "price": 257.7
+      },
+      {
+        "unix_seconds": 1795068000,
+        "price": 248.85
+      },
+      {
+        "unix_seconds": 1795068900,
+        "price": 257.38
+      },
+      {
+        "unix_seconds": 1795069800,
+        "price": 263.97
+      },
+      {
+        "unix_seconds": 1795070700,
+        "price": 272.33
+      },
+      {
+        "unix_seconds": 1795071600,
+        "price": 278.6
+      },
+      {
+        "unix_seconds": 1795072500,
+        "price": 281.0
+      },
+      {
+        "unix_seconds": 1795073400,
+        "price": 276.7
+      },
+      {
+        "unix_seconds": 1795074300,
+        "price": 269.51
+      },
+      {
+        "unix_seconds": 1795075200,
+        "price": 259.0
+      },
+      {
+        "unix_seconds": 1795076100,
+        "price": 251.22
+      },
+      {
+        "unix_seconds": 1795077000,
+        "price": 251.23
+      },
+      {
+        "unix_seconds": 1795077900,
+        "price": 248.09
+      },
+      {
+        "unix_seconds": 1795078800,
+        "price": 265.75
+      },
+      {
+        "unix_seconds": 1795079700,
+        "price": 258.99
+      },
+      {
+        "unix_seconds": 1795080600,
+        "price": 254.82
+      },
+      {
+        "unix_seconds": 1795081500,
+        "price": 252.06
+      },
+      {
+        "unix_seconds": 1795082400,
+        "price": 248.59
+      },
+      {
+        "unix_seconds": 1795083300,
+        "price": 247.39
+      },
+      {
+        "unix_seconds": 1795084200,
+        "price": 240.09
+      },
+      {
+        "unix_seconds": 1795085100,
+        "price": 236.9
+      },
+      {
+        "unix_seconds": 1795086000,
+        "price": 240.22
+      },
+      {
+        "unix_seconds": 1795086900,
+        "price": 227.11
+      },
+      {
+        "unix_seconds": 1795087800,
+        "price": 227.1
+      },
+      {
+        "unix_seconds": 1795088700,
+        "price": 226.42
+      },
+      {
+        "unix_seconds": 1795089600,
+        "price": 229.62
+      },
+      {
+        "unix_seconds": 1795090500,
+        "price": 230.77
+      },
+      {
+        "unix_seconds": 1795091400,
+        "price": 236.18
+      },
+      {
+        "unix_seconds": 1795092300,
+        "price": 232.22
+      },
+      {
+        "unix_seconds": 1795093200,
+        "price": 238.5
+      },
+      {
+        "unix_seconds": 1795094100,
+        "price": 244.2
+      },
+      {
+        "unix_seconds": 1795095000,
+        "price": 244.12
+      },
+      {
+        "unix_seconds": 1795095900,
+        "price": 254.4
+      },
+      {
+        "unix_seconds": 1795096800,
+        "price": 244.95
+      },
+      {
+        "unix_seconds": 1795097700,
+        "price": 250.0
+      },
+      {
+        "unix_seconds": 1795098600,
+        "price": 254.91
+      },
+      {
+        "unix_seconds": 1795099500,
+        "price": 258.51
+      },
+      {
+        "unix_seconds": 1795100400,
+        "price": 259.1
+      },
+      {
+        "unix_seconds": 1795101300,
+        "price": 261.15
+      },
+      {
+        "unix_seconds": 1795102200,
+        "price": 264.87
+      },
+      {
+        "unix_seconds": 1795103100,
+        "price": 266.0
+      },
+      {
+        "unix_seconds": 1795104000,
+        "price": 266.09
+      },
+      {
+        "unix_seconds": 1795104900,
+        "price": 265.72
+      },
+      {
+        "unix_seconds": 1795105800,
+        "price": 261.0
+      },
+      {
+        "unix_seconds": 1795106700,
+        "price": 260.99
+      },
+      {
+        "unix_seconds": 1795107600,
+        "price": 270.5
+      },
+      {
+        "unix_seconds": 1795108500,
+        "price": 263.27
+      },
+      {
+        "unix_seconds": 1795109400,
+        "price": 261.79
+      },
+      {
+        "unix_seconds": 1795110300,
+        "price": 251.8
+      },
+      {
+        "unix_seconds": 1795111200,
+        "price": 263.97
+      },
+      {
+        "unix_seconds": 1795112100,
+        "price": 253.23
+      },
+      {
+        "unix_seconds": 1795113000,
+        "price": 252.94
+      },
+      {
+        "unix_seconds": 1795113900,
+        "price": 244.89
+      },
+      {
+        "unix_seconds": 1795114800,
+        "price": 242.93
+      },
+      {
+        "unix_seconds": 1795115700,
+        "price": 234.2
+      },
+      {
+        "unix_seconds": 1795116600,
+        "price": 215.2
+      },
+      {
+        "unix_seconds": 1795117500,
+        "price": 208.46
+      },
+      {
+        "unix_seconds": 1795118400,
+        "price": 216.83
+      },
+      {
+        "unix_seconds": 1795119300,
+        "price": 209.94
+      },
+      {
+        "unix_seconds": 1795120200,
+        "price": 203.39
+      },
+      {
+        "unix_seconds": 1795121100,
+        "price": 188.03
+      },
+      {
+        "unix_seconds": 1795122000,
+        "price": 207.58
+      },
+      {
+        "unix_seconds": 1795122900,
+        "price": 200.35
+      },
+      {
+        "unix_seconds": 1795123800,
+        "price": 188.61
+      },
+      {
+        "unix_seconds": 1795124700,
+        "price": 185.6
+      },
+      {
+        "unix_seconds": 1795125600,
+        "price": 193.78
+      },
+      {
+        "unix_seconds": 1795126500,
+        "price": 185.02
+      },
+      {
+        "unix_seconds": 1795127400,
+        "price": 181.68
+      },
+      {
+        "unix_seconds": 1795128300,
+        "price": 175.29
+      }
+    ],
+    "negative_periods": [],
+    "stats": {
+      "min_price": 166.52,
+      "max_price": 281.0,
+      "avg_price": 224.83,
       "negative_hours": 0
     }
   }
